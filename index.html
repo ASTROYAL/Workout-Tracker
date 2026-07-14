@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PPL Tracker">
+<link rel="manifest" href="manifest.json">
+<title>PPL + Fat Loss Tracker</title>
+<style>
+:root {
+  --bg:#0a0a0a; --surface:#111; --card:#161616; --border:#1e1e1e;
+  --accent:#e8ff00; --push:#f43f5e; --pull:#3b82f6; --legs:#f97316;
+  --hiit:#a855f7; --green:#22c55e; --red:#ef4444; --orange:#f97316;
+  --text:#f0f0f0; --muted:#666; --radius:12px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden;}
+
+/* SCREENS */
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;}
+.screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none;}
+
+/* NAV */
+.nav{display:flex;background:var(--surface);border-top:1px solid var(--border);padding-bottom:calc(6px + var(--safe-bottom));flex-shrink:0;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 4px;background:none;border:none;color:var(--muted);font-size:9px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:color .2s;}
+.nav-btn.active{color:var(--accent);}
+.nav-btn svg{width:20px;height:20px;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
+.topbar h1{font-size:19px;font-weight:800;letter-spacing:-.3px;}
+.topbar h1 span{color:var(--accent);}
+.icon-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+
+/* SCROLL */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* WEEK STRIP */
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;padding:12px 10px;}
+.day-chip{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 3px;text-align:center;cursor:pointer;transition:all .2s;}
+.day-chip.active{background:#1a1a1a;border-color:#333;transform:scale(1.05);}
+.day-chip.push{border-bottom:3px solid var(--push);}
+.day-chip.pull{border-bottom:3px solid var(--pull);}
+.day-chip.legs{border-bottom:3px solid var(--legs);}
+.day-chip.hiit{border-bottom:3px solid var(--hiit);}
+.day-chip.rest{border-bottom:3px solid var(--muted);}
+.chip-day{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;}
+.chip-type{font-size:10px;font-weight:800;}
+.day-chip.push .chip-type{color:var(--push);}
+.day-chip.pull .chip-type{color:var(--pull);}
+.day-chip.legs .chip-type{color:var(--legs);}
+.day-chip.hiit .chip-type{color:var(--hiit);}
+.day-chip.rest .chip-type{color:var(--muted);}
+
+/* CARDS */
+.session-card{margin:0 10px 8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.session-head{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.session-head h2{font-size:16px;font-weight:800;}
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.08em;}
+.push-badge{background:rgba(244,63,94,.15);color:var(--push);}
+.pull-badge{background:rgba(59,130,246,.15);color:var(--pull);}
+.legs-badge{background:rgba(249,115,22,.15);color:var(--legs);}
+.hiit-badge{background:rgba(168,85,247,.15);color:var(--hiit);}
+.fat-badge{background:rgba(34,197,94,.15);color:var(--green);}
+
+.ex-row{padding:11px 14px;border-bottom:1px solid #131313;display:flex;align-items:center;gap:10px;}
+.ex-row:last-child{border-bottom:none;}
+.ex-num-badge{width:24px;height:24px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--muted);flex-shrink:0;}
+.ex-info{flex:1;min-width:0;}
+.ex-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ex-meta{font-size:11px;color:var(--muted);margin-top:1px;}
+.ex-sets{font-size:11px;font-weight:800;color:var(--accent);background:rgba(232,255,0,.08);padding:3px 9px;border-radius:20px;white-space:nowrap;}
+
+.start-btn{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px;padding:15px;background:var(--accent);color:#000;font-size:14px;font-weight:900;border-radius:var(--radius);border:none;cursor:pointer;letter-spacing:.03em;}
+.start-btn.hiit-start{background:var(--hiit);color:#fff;}
+
+/* WORKOUT SCREEN */
+.workout-header{padding:12px 14px;background:var(--surface);border-bottom:1px solid var(--border);}
+.workout-title{font-size:17px;font-weight:900;}
+.workout-subtitle{font-size:11px;color:var(--muted);margin-top:2px;}
+.timer-pill{display:inline-flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:800;color:var(--accent);margin-top:8px;}
+
+.ex-block{margin:8px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.ex-block-head{padding:11px 12px;background:#111;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.ex-block-name{font-size:14px;font-weight:800;flex:1;}
+.ex-block-tip{font-size:11px;color:var(--muted);font-style:italic;padding:7px 12px;background:#0d0d0d;border-bottom:1px solid var(--border);}
+.set-row{display:grid;grid-template-columns:28px 1fr 1fr 40px;gap:6px;align-items:center;padding:9px 12px;border-bottom:1px solid #111;}
+.set-row:last-child{border-bottom:none;}
+.set-label{font-size:11px;font-weight:800;color:var(--muted);text-align:center;}
+.set-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 6px;color:var(--text);font-size:15px;font-weight:800;text-align:center;width:100%;outline:none;}
+.set-input:focus{border-color:var(--accent);}
+.set-done{width:34px;height:34px;border-radius:8px;background:var(--border);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.set-done.checked{background:var(--green);}
+.set-header{display:grid;grid-template-columns:28px 1fr 1fr 40px;gap:6px;padding:7px 12px;background:#0d0d0d;border-bottom:1px solid var(--border);}
+.set-header span{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;text-align:center;}
+
+.finish-btn{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 10px;padding:15px;background:var(--green);color:#000;font-size:14px;font-weight:900;border-radius:var(--radius);border:none;cursor:pointer;}
+
+/* HIIT SCREEN */
+.hiit-phase{margin:8px 10px;border-radius:var(--radius);padding:20px;text-align:center;border:2px solid var(--border);transition:all .3s;}
+.hiit-phase.work-phase{background:rgba(239,68,68,.1);border-color:var(--red);}
+.hiit-phase.rest-phase{background:rgba(34,197,94,.1);border-color:var(--green);}
+.hiit-phase.prep-phase{background:rgba(168,85,247,.1);border-color:var(--hiit);}
+.phase-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;margin-bottom:8px;}
+.phase-time{font-size:72px;font-weight:900;line-height:1;}
+.phase-exercise{font-size:16px;font-weight:700;margin-top:10px;}
+.phase-next{font-size:12px;color:var(--muted);margin-top:6px;}
+.hiit-progress{margin:0 10px;background:var(--border);border-radius:4px;height:6px;overflow:hidden;}
+.hiit-progress-bar{height:100%;background:var(--hiit);border-radius:4px;transition:width .5s;}
+.hiit-controls{display:flex;gap:8px;margin:10px;}
+.hiit-ctrl-btn{flex:1;padding:14px;border-radius:10px;border:none;font-size:14px;font-weight:800;cursor:pointer;}
+
+/* NUTRITION SCREEN */
+.macro-ring-wrap{display:flex;justify-content:center;align-items:center;padding:20px 14px 10px;gap:24px;flex-wrap:wrap;}
+.macro-ring{position:relative;width:110px;height:110px;}
+.macro-ring svg{transform:rotate(-90deg);}
+.macro-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.macro-ring-val{font-size:20px;font-weight:900;}
+.macro-ring-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+
+.nutrition-input-card{margin:0 10px 8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+.nut-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.nut-row:last-child{margin-bottom:0;}
+.nut-label{font-size:13px;font-weight:600;}
+.nut-sub{font-size:11px;color:var(--muted);}
+.nut-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:16px;font-weight:800;text-align:center;width:90px;outline:none;}
+.nut-input:focus{border-color:var(--accent);}
+
+.calorie-bar-wrap{margin:0 10px 8px;}
+.calorie-bar-bg{background:var(--border);border-radius:6px;height:10px;overflow:hidden;margin-top:6px;}
+.calorie-bar-fill{height:100%;border-radius:6px;transition:width .5s;}
+.calorie-stats{display:flex;justify-content:space-between;margin-top:5px;}
+.cal-stat{font-size:11px;color:var(--muted);}
+.cal-stat b{color:var(--text);}
+
+.tip-card{margin:0 10px 8px;background:rgba(232,255,0,.04);border:1px solid rgba(232,255,0,.1);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;}
+.tip-title{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;}
+.tip-text{font-size:12px;color:#aaa;line-height:1.7;}
+
+/* HISTORY/AUDIT */
+.history-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:10px;color:var(--muted);}
+.history-item{margin:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.history-head{padding:11px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.history-head h3{font-size:14px;font-weight:800;}
+.history-date{font-size:11px;color:var(--muted);margin-top:2px;}
+.history-stats{display:flex;gap:12px;padding:10px 12px;}
+.h-stat{text-align:center;}
+.h-stat-val{font-size:17px;font-weight:900;color:var(--accent);}
+.h-stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.history-expand{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;transition:transform .2s;}
+.history-detail{padding:10px 12px;border-top:1px solid var(--border);display:none;}
+.history-detail.open{display:block;}
+.h-ex-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #131313;}
+.h-ex-row:last-child{border-bottom:none;}
+.h-ex-name{font-size:12px;}
+.h-ex-data{font-size:11px;color:var(--muted);}
+
+/* AUDIT */
+.audit-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;}
+.audit-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+.audit-val{font-size:26px;font-weight:900;color:var(--accent);}
+.audit-lbl{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.08em;}
+.section-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;padding:12px 12px 6px;}
+.pr-item{margin:0 10px 6px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 12px;display:flex;align-items:center;justify-content:space-between;}
+.pr-name{font-size:12px;font-weight:700;}
+.pr-weight{font-size:20px;font-weight:900;color:var(--accent);}
+.pr-meta{font-size:10px;color:var(--muted);}
+
+.vol-bars{margin:0 10px 8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;}
+.vol-bar-wrap{display:flex;align-items:flex-end;gap:10px;height:70px;margin-top:10px;}
+.vol-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.vol-bar{width:100%;border-radius:4px 4px 0 0;min-height:3px;transition:height .5s;}
+.vol-bar-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.vol-bar-val{font-size:9px;font-weight:800;}
+
+/* SHARE */
+.share-area{padding:12px 10px;}
+.share-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:var(--radius);border:none;cursor:pointer;font-size:14px;font-weight:800;margin-bottom:8px;}
+.share-btn.primary{background:var(--accent);color:#000;}
+.share-btn.secondary{background:var(--card);color:var(--text);border:1px solid var(--border);}
+.share-preview{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-size:11px;color:var(--muted);font-family:monospace;max-height:220px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;}
+
+/* REST OVERLAY */
+.rest-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .3s;}
+.rest-overlay.hidden{opacity:0;pointer-events:none;}
+.rest-circle{width:130px;height:130px;border-radius:50%;border:3px solid var(--border);display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.rest-secs{font-size:52px;font-weight:900;color:var(--accent);line-height:1;}
+.rest-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+.rest-skip{background:var(--card);border:1px solid var(--border);color:var(--text);padding:11px 28px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(75px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a1a;border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* TABS */
+.tabs{display:flex;gap:6px;padding:10px 10px 0;}
+.tab-btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:rgba(232,255,0,.1);border-color:rgba(232,255,0,.3);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="screen" id="screen-home">
+  <div class="topbar">
+    <h1>PPL <span>+ Cut</span></h1>
+    <div style="display:flex;gap:6px">
+      <div class="icon-btn" onclick="navigate('nutrition')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      </div>
+      <div class="icon-btn" onclick="navigate('share')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="week-strip" id="week-strip"></div>
+    <div id="session-view"></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="navigate('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      Home
+    </button>
+    <button class="nav-btn" onclick="navigate('nutrition')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      Nutrition
+    </button>
+    <button class="nav-btn" onclick="navigate('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      History
+    </button>
+    <button class="nav-btn" onclick="navigate('audit')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Audit
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════ WORKOUT ═══════════════ -->
+<div class="screen hidden" id="screen-workout">
+  <div class="workout-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="icon-btn" onclick="exitWorkout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15,18 9,12 15,6"/></svg>
+      </div>
+      <div>
+        <div class="workout-title" id="wk-title">Push A</div>
+        <div class="workout-subtitle" id="wk-subtitle">Chest · Shoulders · Triceps</div>
+      </div>
+    </div>
+    <div class="timer-pill" id="wk-timer">⏱ 00:00</div>
+  </div>
+  <div class="scroll" id="workout-scroll"></div>
+</div>
+
+<!-- ═══════════════ HIIT ═══════════════ -->
+<div class="screen hidden" id="screen-hiit">
+  <div class="workout-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="icon-btn" onclick="stopHIIT()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15,18 9,12 15,6"/></svg>
+      </div>
+      <div>
+        <div class="workout-title" id="hiit-title">HIIT Session</div>
+        <div class="workout-subtitle" id="hiit-subtitle">Loading...</div>
+      </div>
+    </div>
+    <div class="timer-pill" id="hiit-elapsed">⏱ 00:00</div>
+  </div>
+  <div class="scroll">
+    <div style="padding:10px 10px 0">
+      <div class="hiit-progress"><div class="hiit-progress-bar" id="hiit-prog-bar" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:5px;font-size:11px;color:var(--muted)">
+        <span id="hiit-round-label">Round 0/0</span>
+        <span id="hiit-total-time">Total: 0:00</span>
+      </div>
+    </div>
+    <div class="hiit-phase prep-phase" id="hiit-phase-card">
+      <div class="phase-label" id="hiit-phase-label" style="color:var(--hiit)">GET READY</div>
+      <div class="phase-time" id="hiit-phase-time" style="color:var(--hiit)">10</div>
+      <div class="phase-exercise" id="hiit-exercise">Prepare yourself</div>
+      <div class="phase-next" id="hiit-next">Starting soon...</div>
+    </div>
+    <div class="hiit-controls">
+      <button class="hiit-ctrl-btn" style="background:var(--card);color:var(--text);border:1px solid var(--border)" onclick="toggleHIITPause()" id="hiit-pause-btn">⏸ Pause</button>
+      <button class="hiit-ctrl-btn" style="background:var(--red);color:#fff" onclick="stopHIIT()">✕ Stop</button>
+    </div>
+    <div id="hiit-protocol-list" style="padding:0 10px 10px"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ NUTRITION ═══════════════ -->
+<div class="screen hidden" id="screen-nutrition">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="icon-btn" onclick="navigate('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15,18 9,12 15,6"/></svg>
+      </div>
+      <h1>Nutrition <span>Tracker</span></h1>
+    </div>
+  </div>
+  <div class="scroll" id="nutrition-content"></div>
+</div>
+
+<!-- ═══════════════ HISTORY ═══════════════ -->
+<div class="screen hidden" id="screen-history">
+  <div class="topbar"><h1>Workout <span>History</span></h1></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="setHistoryTab('all',this)">All</button>
+    <button class="tab-btn" onclick="setHistoryTab('strength',this)">Strength</button>
+    <button class="tab-btn" onclick="setHistoryTab('hiit',this)">HIIT</button>
+  </div>
+  <div class="scroll" id="history-list" style="margin-top:8px"></div>
+  <div class="nav">
+    <button class="nav-btn" onclick="navigate('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Home</button>
+    <button class="nav-btn" onclick="navigate('nutrition')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Nutrition</button>
+    <button class="nav-btn active" onclick="navigate('history')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>History</button>
+    <button class="nav-btn" onclick="navigate('audit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Audit</button>
+  </div>
+</div>
+
+<!-- ═══════════════ AUDIT ═══════════════ -->
+<div class="screen hidden" id="screen-audit">
+  <div class="topbar"><h1>Audit <span>&amp; PRs</span></h1></div>
+  <div class="scroll" id="audit-content"></div>
+  <div class="nav">
+    <button class="nav-btn" onclick="navigate('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Home</button>
+    <button class="nav-btn" onclick="navigate('nutrition')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Nutrition</button>
+    <button class="nav-btn" onclick="navigate('history')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>History</button>
+    <button class="nav-btn active" onclick="navigate('audit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Audit</button>
+  </div>
+</div>
+
+<!-- ═══════════════ SHARE ═══════════════ -->
+<div class="screen hidden" id="screen-share">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="icon-btn" onclick="navigate('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15,18 9,12 15,6"/></svg></div>
+      <h1>Export <span>&amp; Share</span></h1>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="share-area">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Full workout history, nutrition logs, PRs — packaged for sharing or backup.</p>
+      <button class="share-btn primary" onclick="shareData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Share via WhatsApp / Gmail
+      </button>
+      <button class="share-btn secondary" onclick="copyData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy to Clipboard
+      </button>
+      <button class="share-btn secondary" onclick="downloadData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download as JSON
+      </button>
+      <div class="section-title" style="padding-left:0;margin-top:8px">Preview</div>
+      <div class="share-preview" id="share-preview">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- REST OVERLAY -->
+<div class="rest-overlay hidden" id="rest-overlay">
+  <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Rest Timer</div>
+  <div class="rest-circle">
+    <div class="rest-secs" id="rest-secs">90</div>
+    <div class="rest-label">seconds</div>
+  </div>
+  <button class="rest-skip" onclick="skipRest()">Skip Rest</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA LAYER
+// ═══════════════════════════════════════════
+const KEY = 'ppl_v2';
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{workouts:[],prs:{},nutrition:{}}}catch{return{workouts:[],prs:{},nutrition:{}}}}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
+
+// ═══════════════════════════════════════════
+// PROGRAM DATA
+// ═══════════════════════════════════════════
+const PROGRAM = {
+  'push-a':{name:'Push A',type:'push',day:'Monday',subtitle:'Chest · Shoulders · Triceps — Strength',
+    exercises:[
+      {name:'Barbell Bench Press',sets:5,reps:'3–5',rest:210,tip:'Arch slightly, retract scapula, touch chest every rep',badge:'Compound'},
+      {name:'Overhead Press (Barbell)',sets:4,reps:'4–6',rest:180,tip:'Brace core, bar path slightly forward, full lock out',badge:'Compound'},
+      {name:'Incline Dumbbell Press',sets:3,reps:'8–10',rest:120,tip:'30–45° angle, full stretch at bottom',badge:'Compound'},
+      {name:'Cable Lateral Raise',sets:4,reps:'12–15',rest:90,tip:'Cross-body cable, constant tension on side delts',badge:'Isolation'},
+      {name:'Tricep Pushdown (Rope)',sets:3,reps:'10–12',rest:90,tip:'Flare rope at bottom, hard squeeze',badge:'Isolation'},
+      {name:'Overhead Tricep Extension',sets:3,reps:'10–12',rest:90,tip:'EZ-bar, elbows tucked, full overhead ROM',badge:'Isolation'},
+    ]},
+  'pull-a':{name:'Pull A',type:'pull',day:'Tuesday',subtitle:'Back · Biceps — Strength',
+    exercises:[
+      {name:'Weighted Pull-Up',sets:4,reps:'4–6',rest:210,tip:'Full dead hang, chin clears bar — add weight progressively',badge:'Compound'},
+      {name:'Barbell Bent-Over Row',sets:4,reps:'4–6',rest:180,tip:'Overhand grip, row to lower chest, retract scapula',badge:'Compound'},
+      {name:'Seated Cable Row',sets:3,reps:'8–10',rest:120,tip:"Don't rock torso — isolate the back squeeze",badge:'Compound'},
+      {name:'Straight-Arm Pulldown',sets:3,reps:'12–15',rest:90,tip:'Arms straight, feel lats stretching at top',badge:'Isolation'},
+      {name:'Barbell Curl',sets:4,reps:'5–7',rest:120,tip:'Strict — no swinging. Supinate fully at top',badge:'Isolation'},
+      {name:'Incline Dumbbell Curl',sets:3,reps:'10–12',rest:90,tip:'45° bench — full bicep stretch at bottom',badge:'Isolation'},
+      {name:'Face Pull (Cable)',sets:3,reps:'15–20',rest:60,tip:'Rope to forehead, external rotation — shoulder health',badge:'Accessory'},
+    ]},
+  'legs-a':{name:'Legs A',type:'legs',day:'Wednesday',subtitle:'Quad Dominant — Squat Focus',
+    exercises:[
+      {name:'Barbell Back Squat',sets:5,reps:'3–5',rest:210,tip:'Break parallel, brace hard, knees track toes',badge:'Compound'},
+      {name:'Romanian Deadlift',sets:3,reps:'8–10',rest:180,tip:'Hinge at hips, feel hamstring load, no rounding',badge:'Compound'},
+      {name:'Leg Press',sets:3,reps:'10–12',rest:120,tip:'High foot placement for glutes, full depth',badge:'Compound'},
+      {name:'Leg Extension',sets:3,reps:'12–15',rest:90,tip:'Slow 3s negative, squeeze hard at top',badge:'Isolation'},
+      {name:'Seated Calf Raise',sets:4,reps:'12–15',rest:60,tip:'Full stretch at bottom, 1s pause, explosive up',badge:'Isolation'},
+      {name:'Ab Wheel / Plank',sets:3,reps:'AMRAP',rest:60,tip:'Core finisher — 45s hold or failure',badge:'Accessory'},
+    ]},
+  'push-b':{name:'Push B',type:'push',day:'Thursday',subtitle:'Chest · Shoulders · Triceps — Volume',
+    exercises:[
+      {name:'Incline Barbell Press',sets:4,reps:'4–6',rest:180,tip:'30° incline — upper chest focus',badge:'Compound'},
+      {name:'Dumbbell Shoulder Press',sets:4,reps:'6–8',rest:150,tip:'Neutral grip, full ROM',badge:'Compound'},
+      {name:'Flat Dumbbell Flye',sets:3,reps:'10–12',rest:90,tip:'Wide arc, stretch pec at bottom',badge:'Isolation'},
+      {name:'Machine Chest Press',sets:3,reps:'12–15',rest:90,tip:'Burnout — controlled reps, squeeze chest',badge:'Accessory'},
+      {name:'Seated Lateral Raise',sets:4,reps:'12–15',rest:60,tip:'Lead with elbows not wrists',badge:'Isolation'},
+      {name:'Weighted Dips',sets:3,reps:'8–10',rest:120,tip:'Forward lean for chest emphasis, full depth',badge:'Compound'},
+      {name:'Single-Arm Cable Pushdown',sets:3,reps:'12 each',rest:60,tip:'Greater isolation than two-arm version',badge:'Isolation'},
+    ]},
+  'pull-b':{name:'Pull B',type:'pull',day:'Friday',subtitle:'Back · Biceps — Volume & Thickness',
+    exercises:[
+      {name:'Conventional Deadlift',sets:4,reps:'3–5',rest:210,tip:'Bar over mid-foot, lat engagement before pull',badge:'Compound'},
+      {name:'Chest-Supported DB Row',sets:4,reps:'8–10',rest:120,tip:'Chest on incline bench — pure back work',badge:'Compound'},
+      {name:'Wide-Grip Lat Pulldown',sets:3,reps:'10–12',rest:90,tip:'Pull to upper chest, stretch fully at top',badge:'Compound'},
+      {name:'Single-Arm DB Row',sets:3,reps:'10 each',rest:90,tip:'Elbow drives back — big ROM',badge:'Accessory'},
+      {name:'Hammer Curl',sets:4,reps:'8–10',rest:90,tip:'Neutral grip — brachialis for arm thickness',badge:'Isolation'},
+      {name:'Cable Curl (EZ-bar)',sets:3,reps:'12–15',rest:60,tip:'Constant tension, slow negative',badge:'Isolation'},
+      {name:'Rear Delt Fly',sets:3,reps:'15',rest:60,tip:'Elbows wide — shoulder balance',badge:'Isolation'},
+    ]},
+  'legs-b':{name:'Legs B',type:'legs',day:'Saturday',subtitle:'Posterior Chain — Hamstrings & Glutes',
+    exercises:[
+      {name:'Barbell Hip Thrust',sets:4,reps:'6–8',rest:180,tip:'Drive through heels, squeeze glutes at top',badge:'Compound'},
+      {name:'Bulgarian Split Squat',sets:4,reps:'8 each',rest:120,tip:'Rear foot elevated, lean forward slightly',badge:'Compound'},
+      {name:'Seated Leg Curl',sets:4,reps:'10–12',rest:90,tip:'Slow 3s negative — max hamstring stretch',badge:'Isolation'},
+      {name:'Stiff-Leg Deadlift (DB)',sets:3,reps:'10–12',rest:120,tip:'More stretch than RDL, slight knee bend',badge:'Compound'},
+      {name:'Cable Glute Kickback',sets:3,reps:'15 each',rest:60,tip:'Squeeze at top, controlled return',badge:'Isolation'},
+      {name:'Standing Calf Raise',sets:5,reps:'15',rest:60,tip:'Full ROM, 3s negative — calves need volume',badge:'Isolation'},
+    ]},
+};
+
+// ═══════════════════════════════════════════
+// HIIT PROTOCOLS
+// ═══════════════════════════════════════════
+const HIIT_PROTOCOLS = {
+  'hiit-a':{
+    name:'HIIT A — Tabata Burners', subtitle:'20s Work / 10s Rest × 8 rounds per exercise',
+    type:'hiit', rounds:8, workSecs:20, restSecs:10,
+    exercises:['Burpees','Jump Squats','Mountain Climbers','High Knees'],
+    totalMins:20
+  },
+  'hiit-b':{
+    name:'HIIT B — Sprint Intervals', subtitle:'40s Work / 20s Rest × 6 rounds',
+    type:'hiit', rounds:6, workSecs:40, restSecs:20,
+    exercises:['Treadmill Sprint','Box Jumps','Squat Thrusts','Lateral Shuffles','Jump Lunges','Battle Rope Slams'],
+    totalMins:24
+  },
+  'hiit-c':{
+    name:'HIIT C — EMOM Conditioning', subtitle:'Every Minute On the Minute × 20 min',
+    type:'hiit', rounds:4, workSecs:40, restSecs:20,
+    exercises:['KB Swings','Push-up Burpees','Jump Rope / Fast Feet','Plank to Push-up','Tuck Jumps'],
+    totalMins:20
+  }
+};
+
+const WEEK = [
+  {key:'push-a',day:'Mon'},{key:'pull-a',day:'Tue'},{key:'legs-a',day:'Wed'},
+  {key:'push-b',day:'Thu'},{key:'pull-b',day:'Fri'},{key:'legs-b',day:'Sat'},
+  {key:'rest',day:'Sun'}
+];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentDay = 'push-a';
+let activeWorkout = null;
+let workoutTimer = null;
+let restTimerInterval = null;
+let hiitState = null;
+let hiitInterval = null;
+let hiitElapsedInterval = null;
+let historyTab = 'all';
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function navigate(to){
+  ['home','workout','hiit','nutrition','history','audit','share'].forEach(s=>{
+    const el=document.getElementById('screen-'+s);
+    if(el) el.classList.toggle('hidden', s!==to);
+  });
+  if(to==='history') renderHistory();
+  if(to==='audit') renderAudit();
+  if(to==='share') renderShare();
+  if(to==='nutrition') renderNutrition();
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(`.nav-btn[onclick*="'${to}'"]`).forEach(b=>b.classList.add('active'));
+}
+
+// ═══════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════
+function renderHome(){
+  document.getElementById('week-strip').innerHTML = WEEK.map(w=>{
+    const prog=PROGRAM[w.key];
+    const type=prog?prog.type:'rest';
+    const labels={push:'Push',pull:'Pull',legs:'Legs'};
+    const label=prog?(labels[prog.type]||'?'):'Rest';
+    return `<div class="day-chip ${type} ${w.key===currentDay?'active':''}" onclick="selectDay('${w.key}')">
+      <div class="chip-day">${w.day}</div><div class="chip-type">${label}</div>
+    </div>`;
+  }).join('');
+  renderSessionView();
+}
+
+function selectDay(key){currentDay=key;renderHome();}
+
+function renderSessionView(){
+  const el=document.getElementById('session-view');
+  const prog=PROGRAM[currentDay];
+  if(!prog){
+    el.innerHTML=`<div style="text-align:center;padding:50px 20px;color:var(--muted)">
+      <div style="font-size:44px">🛌</div>
+      <div style="font-size:18px;font-weight:800;margin-top:10px">Rest Day</div>
+      <div style="font-size:12px;margin-top:6px">Sleep 8hrs. Recover. Grow.</div>
+    </div>
+    <div style="margin:0 10px">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;padding-left:2px">Optional — Active Recovery HIIT</div>
+      ${renderHIITCards()}
+    </div>`;
+    return;
+  }
+  const tc={push:'push',pull:'pull',legs:'legs'}[prog.type];
+  el.innerHTML=`
+    <div class="session-card">
+      <div class="session-head"><h2>${prog.name}</h2><span class="badge ${tc}-badge">${prog.type}</span></div>
+      ${prog.exercises.map((ex,i)=>`
+        <div class="ex-row">
+          <div class="ex-num-badge">${i+1}</div>
+          <div class="ex-info"><div class="ex-title">${ex.name}</div><div class="ex-meta">${ex.badge} · Rest ${ex.rest}s</div></div>
+          <div class="ex-sets">${ex.sets}×${ex.reps}</div>
+        </div>`).join('')}
+    </div>
+    <button class="start-btn" onclick="startWorkout('${currentDay}')">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><polygon points="5,3 19,12 5,21"/></svg>
+      Start ${prog.name}
+    </button>
+    <div style="margin:0 10px 4px">
+      <div style="font-size:11px;font-weight:800;color:var(--hiit);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;padding-left:2px">🔥 Add HIIT After Lifting</div>
+      ${renderHIITCards()}
+    </div>`;
+}
+
+function renderHIITCards(){
+  return Object.entries(HIIT_PROTOCOLS).map(([key,h])=>`
+    <div class="session-card" style="margin-bottom:8px">
+      <div class="session-head"><h2 style="font-size:14px">${h.name}</h2><span class="badge hiit-badge">HIIT</span></div>
+      <div class="ex-row">
+        <div class="ex-info">
+          <div class="ex-title" style="font-size:12px">${h.subtitle}</div>
+          <div class="ex-meta">${h.exercises.length} exercises · ~${h.totalMins} min · Burns ~${h.totalMins*9}–${h.totalMins*12} kcal</div>
+        </div>
+      </div>
+      <button class="start-btn hiit-start" style="margin:8px 10px 10px;padding:12px" onclick="startHIIT('${key}')">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><polygon points="5,3 19,12 5,21"/></svg>
+        Start ${h.name.split('—')[0].trim()}
+      </button>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// STRENGTH WORKOUT
+// ═══════════════════════════════════════════
+function startWorkout(key){
+  const prog=PROGRAM[key];
+  activeWorkout={key,startTime:Date.now(),sets:{}};
+  prog.exercises.forEach((ex,i)=>{
+    activeWorkout.sets[i]=Array.from({length:ex.sets},()=>({weight:'',reps:'',done:false}));
+  });
+  renderWorkoutScreen();
+  navigate('workout');
+  if(workoutTimer) clearInterval(workoutTimer);
+  workoutTimer=setInterval(()=>{
+    const e=Math.floor((Date.now()-activeWorkout.startTime)/1000);
+    const el=document.getElementById('wk-timer');
+    if(el) el.textContent=`⏱ ${pad(Math.floor(e/60))}:${pad(e%60)}`;
+  },1000);
+}
+
+function renderWorkoutScreen(){
+  const prog=PROGRAM[activeWorkout.key];
+  document.getElementById('wk-title').textContent=prog.name;
+  document.getElementById('wk-subtitle').textContent=prog.subtitle;
+  document.getElementById('workout-scroll').innerHTML=
+    prog.exercises.map((ex,i)=>`
+      <div class="ex-block">
+        <div class="ex-block-head">
+          <div class="ex-num-badge">${i+1}</div>
+          <div class="ex-block-name">${ex.name}</div>
+          <span style="font-size:9px;background:var(--border);padding:2px 7px;border-radius:10px;color:var(--muted)">${ex.badge}</span>
+        </div>
+        <div class="ex-block-tip">${ex.tip}</div>
+        <div class="set-header"><span>Set</span><span>Weight (kg)</span><span>Reps</span><span>✓</span></div>
+        ${activeWorkout.sets[i].map((s,j)=>`
+          <div class="set-row">
+            <div class="set-label">${j+1}</div>
+            <input class="set-input" type="number" inputmode="decimal" placeholder="kg" value="${s.weight}" onchange="updateSet(${i},${j},'weight',this.value)"/>
+            <input class="set-input" type="number" inputmode="numeric" placeholder="${ex.reps}" value="${s.reps}" onchange="updateSet(${i},${j},'reps',this.value)"/>
+            <button class="set-done ${s.done?'checked':''}" onclick="toggleSet(${i},${j},${ex.rest})" id="done-${i}-${j}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="${s.done?'#000':'var(--muted)'}" stroke-width="3" width="15" height="15"><polyline points="20,6 9,17 4,12"/></svg>
+            </button>
+          </div>`).join('')}
+      </div>`).join('')+
+    `<button class="finish-btn" onclick="finishWorkout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><polyline points="20,6 9,17 4,12"/></svg>
+      Finish Workout
+    </button><div style="height:20px"></div>`;
+}
+
+function updateSet(ei,si,f,v){if(activeWorkout) activeWorkout.sets[ei][si][f]=v;}
+
+function toggleSet(ei,si,rest){
+  if(!activeWorkout) return;
+  const s=activeWorkout.sets[ei][si];
+  s.done=!s.done;
+  const btn=document.getElementById(`done-${ei}-${si}`);
+  btn.className=`set-done ${s.done?'checked':''}`;
+  btn.querySelector('svg').setAttribute('stroke',s.done?'#000':'var(--muted)');
+  if(s.done){showToast(`Set ✓  Rest ${rest}s`);startRestTimer(rest);}
+}
+
+function finishWorkout(){
+  if(workoutTimer){clearInterval(workoutTimer);workoutTimer=null;}
+  const prog=PROGRAM[activeWorkout.key];
+  const entry={
+    id:Date.now(),key:activeWorkout.key,name:prog.name,type:prog.type,
+    sessionType:'strength',date:new Date().toISOString(),
+    duration:Math.floor((Date.now()-activeWorkout.startTime)/1000),
+    exercises:prog.exercises.map((ex,i)=>({name:ex.name,sets:activeWorkout.sets[i].map(s=>({weight:s.weight||0,reps:s.reps||0,done:s.done}))}))
+  };
+  const data=load();
+  data.workouts.unshift(entry);
+  entry.exercises.forEach(ex=>ex.sets.forEach(s=>{
+    if(s.done&&parseFloat(s.weight)>0){
+      const pr=data.prs[ex.name];
+      if(!pr||parseFloat(s.weight)>parseFloat(pr.weight))
+        data.prs[ex.name]={weight:s.weight,reps:s.reps,date:entry.date};
+    }
+  }));
+  save(data);
+  activeWorkout=null;
+  showToast('Workout saved! 💪');
+  navigate('home');
+}
+
+function exitWorkout(){
+  if(workoutTimer){clearInterval(workoutTimer);workoutTimer=null;}
+  activeWorkout=null;
+  navigate('home');
+}
+
+// ═══════════════════════════════════════════
+// HIIT ENGINE
+// ═══════════════════════════════════════════
+function startHIIT(protocolKey){
+  const p=HIIT_PROTOCOLS[protocolKey];
+  const sequence=[];
+  sequence.push({type:'prep',label:'GET READY',secs:10,exercise:'Prepare yourself',color:'var(--hiit)'});
+  p.exercises.forEach((ex,ei)=>{
+    for(let r=0;r<p.rounds;r++){
+      sequence.push({type:'work',label:'WORK',secs:p.workSecs,exercise:ex,next:`Rest ${p.restSecs}s`,color:'var(--red)'});
+      if(r<p.rounds-1||ei<p.exercises.length-1)
+        sequence.push({type:'rest',label:'REST',secs:p.restSecs,exercise:'Breathe',next:r<p.rounds-1?`Round ${r+2}: ${ex}`:`Next: ${p.exercises[ei+1]||'Done!'}`,color:'var(--green)'});
+    }
+  });
+  sequence.push({type:'done',label:'DONE',secs:0,exercise:'Great work! 🔥',color:'var(--accent)'});
+
+  hiitState={protocolKey,protocol:p,sequence,current:0,paused:false,startTime:Date.now(),totalSecs:0};
+  document.getElementById('hiit-title').textContent=p.name.split('—')[0].trim();
+  document.getElementById('hiit-subtitle').textContent=p.subtitle;
+
+  // protocol list
+  document.getElementById('hiit-protocol-list').innerHTML=`
+    <div class="section-title" style="padding-left:0">Exercises</div>
+    ${p.exercises.map((ex,i)=>`<div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between"><span>${ex}</span><span style="color:var(--muted);font-size:11px">${p.rounds} rounds</span></div>`).join('')}
+    <div style="height:20px"></div>`;
+
+  navigate('hiit');
+  runHIITStep();
+
+  hiitElapsedInterval=setInterval(()=>{
+    if(!hiitState||hiitState.paused) return;
+    hiitState.totalSecs++;
+    const el=document.getElementById('hiit-elapsed');
+    if(el) el.textContent=`⏱ ${pad(Math.floor(hiitState.totalSecs/60))}:${pad(hiitState.totalSecs%60)}`;
+  },1000);
+}
+
+function runHIITStep(){
+  if(!hiitState) return;
+  const step=hiitState.sequence[hiitState.current];
+  if(!step||step.type==='done'){finishHIIT();return;}
+
+  const total=hiitState.sequence.length-2;
+  const pct=Math.round((hiitState.current/total)*100);
+  document.getElementById('hiit-prog-bar').style.width=pct+'%';
+
+  const workIdx=hiitState.sequence.slice(0,hiitState.current+1).filter(s=>s.type==='work').length;
+  const totalWork=hiitState.sequence.filter(s=>s.type==='work').length;
+  document.getElementById('hiit-round-label').textContent=`Interval ${workIdx}/${totalWork}`;
+
+  const card=document.getElementById('hiit-phase-card');
+  card.className=`hiit-phase ${step.type==='work'?'work-phase':step.type==='rest'?'rest-phase':'prep-phase'}`;
+  document.getElementById('hiit-phase-label').textContent=step.label;
+  document.getElementById('hiit-phase-label').style.color=step.color;
+  document.getElementById('hiit-phase-time').textContent=step.secs;
+  document.getElementById('hiit-phase-time').style.color=step.color;
+  document.getElementById('hiit-exercise').textContent=step.exercise;
+  document.getElementById('hiit-next').textContent=step.next||'';
+
+  let remaining=step.secs;
+  if(hiitInterval) clearInterval(hiitInterval);
+  hiitInterval=setInterval(()=>{
+    if(!hiitState||hiitState.paused) return;
+    remaining--;
+    const el=document.getElementById('hiit-phase-time');
+    if(el) el.textContent=remaining;
+    if(remaining<=0){
+      clearInterval(hiitInterval);
+      hiitState.current++;
+      runHIITStep();
+    }
+  },1000);
+}
+
+function toggleHIITPause(){
+  if(!hiitState) return;
+  hiitState.paused=!hiitState.paused;
+  document.getElementById('hiit-pause-btn').textContent=hiitState.paused?'▶ Resume':'⏸ Pause';
+}
+
+function finishHIIT(){
+  if(hiitInterval){clearInterval(hiitInterval);hiitInterval=null;}
+  if(hiitElapsedInterval){clearInterval(hiitElapsedInterval);hiitElapsedInterval=null;}
+  const p=hiitState.protocol;
+  const entry={
+    id:Date.now(),key:hiitState.protocolKey,name:p.name,type:'hiit',sessionType:'hiit',
+    date:new Date().toISOString(),duration:hiitState.totalSecs,
+    exercises:p.exercises.map(ex=>({name:ex,sets:[{done:true}]})),
+    caloriesBurned:Math.round(hiitState.totalSecs/60*10)
+  };
+  const data=load();
+  data.workouts.unshift(entry);
+  save(data);
+  hiitState=null;
+  showToast('HIIT done! 🔥 Great work!');
+  navigate('home');
+}
+
+function stopHIIT(){
+  if(hiitInterval){clearInterval(hiitInterval);hiitInterval=null;}
+  if(hiitElapsedInterval){clearInterval(hiitElapsedInterval);hiitElapsedInterval=null;}
+  hiitState=null;
+  navigate('home');
+}
+
+// ═══════════════════════════════════════════
+// NUTRITION
+// ═══════════════════════════════════════════
+function renderNutrition(){
+  const today=todayKey();
+  const data=load();
+  const nt=data.nutrition[today]||{calories:0,protein:0,carbs:0,fat:0,water:0,weight:0};
+  const targets={calories:2000,protein:160,carbs:200,fat:60,water:3000};
+
+  const el=document.getElementById('nutrition-content');
+  el.innerHTML=`
+    <div class="tabs">
+      <button class="tab-btn active" id="nut-today-btn" onclick="setNutTab('today')">Today</button>
+      <button class="tab-btn" id="nut-goals-btn" onclick="setNutTab('goals')">Goals</button>
+      <button class="tab-btn" id="nut-log-btn" onclick="setNutTab('log')">Log</button>
+    </div>
+
+    <div id="nut-tab-today">
+      <!-- CALORIES -->
+      <div style="margin:10px 10px 6px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:700">Calories</span>
+          <span style="font-size:12px;color:var(--muted)">${nt.calories} / ${targets.calories} kcal</span>
+        </div>
+        <div style="background:var(--border);border-radius:6px;height:8px;overflow:hidden">
+          <div style="height:100%;border-radius:6px;background:${nt.calories>targets.calories?'var(--red)':'var(--accent)'};width:${Math.min(100,Math.round((nt.calories/targets.calories)*100))}%;transition:width .5s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span style="font-size:10px;color:var(--muted)">Remaining: <b style="color:var(--text)">${Math.max(0,targets.calories-nt.calories)} kcal</b></span>
+          <span style="font-size:10px;color:var(--muted)">${Math.round((nt.calories/targets.calories)*100)}%</span>
+        </div>
+      </div>
+
+      <!-- MACROS -->
+      <div class="macro-ring-wrap">
+        ${[
+          ['Protein','protein','#3b82f6',targets.protein,'g'],
+          ['Carbs','carbs','#f97316',targets.carbs,'g'],
+          ['Fat','fat','#f43f5e',targets.fat,'g'],
+        ].map(([lbl,key,color,target,unit])=>{
+          const val=nt[key]||0;
+          const pct=Math.min(1,val/target);
+          const r=40,c=2*Math.PI*r,dash=pct*c;
+          return `<div class="macro-ring">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle cx="55" cy="55" r="${r}" fill="none" stroke="var(--border)" stroke-width="8"/>
+              <circle cx="55" cy="55" r="${r}" fill="none" stroke="${color}" stroke-width="8"
+                stroke-dasharray="${dash.toFixed(1)} ${c.toFixed(1)}" stroke-linecap="round"/>
+            </svg>
+            <div class="macro-ring-center">
+              <div class="macro-ring-val" style="color:${color}">${val}</div>
+              <div class="macro-ring-lbl">${lbl}</div>
+              <div style="font-size:9px;color:var(--muted)">/${target}${unit}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <!-- INPUT -->
+      <div class="nutrition-input-card">
+        <div style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Log Today's Intake</div>
+        ${[
+          ['Calories','calories','kcal'],['Protein','protein','g'],
+          ['Carbs','carbs','g'],['Fat','fat','g'],
+        ].map(([lbl,key,unit])=>`
+          <div class="nut-row">
+            <div><div class="nut-label">${lbl}</div><div class="nut-sub">${unit}</div></div>
+            <input class="nut-input" type="number" inputmode="numeric" id="nut-${key}" value="${nt[key]||''}" placeholder="0" onchange="saveNutrition()"/>
+          </div>`).join('')}
+        <div class="nut-row">
+          <div><div class="nut-label">Water</div><div class="nut-sub">ml</div></div>
+          <input class="nut-input" type="number" inputmode="numeric" id="nut-water" value="${nt.water||''}" placeholder="0" onchange="saveNutrition()"/>
+        </div>
+        <div class="nut-row">
+          <div><div class="nut-label">Body Weight</div><div class="nut-sub">kg</div></div>
+          <input class="nut-input" type="number" inputmode="decimal" id="nut-weight" value="${nt.weight||''}" placeholder="0" onchange="saveNutrition()"/>
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">⚡ Fat Loss Formula</div>
+        <div class="tip-text">
+          <b>Deficit:</b> Eat 300–500 kcal below maintenance. Never go below 1,500 kcal/day.<br>
+          <b>Protein:</b> 2g per kg bodyweight — preserves muscle while cutting.<br>
+          <b>Carbs:</b> Time them around training. Cut them on rest days.<br>
+          <b>HIIT:</b> Burns 150–250 kcal per session. Do after lifting, never before.
+        </div>
+      </div>
+
+      <!-- WEIGHT LOG -->
+      <div id="weight-chart-wrap"></div>
+      <div style="height:20px"></div>
+    </div>
+
+    <div id="nut-tab-goals" style="display:none">
+      <div class="nutrition-input-card" style="margin-top:10px">
+        <div style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Set Your Daily Targets</div>
+        ${[
+          ['Calorie Target','goal_calories','kcal',2000],
+          ['Protein Target','goal_protein','g',160],
+          ['Carb Target','goal_carbs','g',200],
+          ['Fat Target','goal_fat','g',60],
+          ['Water Target','goal_water','ml',3000],
+        ].map(([lbl,key,unit,def])=>{
+          const data=load();
+          const val=(data.nutrition.goals||{})[key]||def;
+          return `<div class="nut-row">
+            <div><div class="nut-label">${lbl}</div><div class="nut-sub">${unit}</div></div>
+            <input class="nut-input" type="number" inputmode="numeric" id="${key}" value="${val}" placeholder="${def}" onchange="saveGoals()"/>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="tip-card">
+        <div class="tip-title">💡 How to find your targets</div>
+        <div class="tip-text">
+          <b>TDEE:</b> Bodyweight (kg) × 33 = rough maintenance kcal.<br>
+          <b>Deficit:</b> Subtract 400–500 kcal from TDEE for fat loss.<br>
+          <b>Protein:</b> 2× bodyweight in kg (grams).<br>
+          <b>Example 75kg person:</b> TDEE ~2475 kcal → Cut target ~2000 kcal, Protein 150g.
+        </div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <div id="nut-tab-log" style="display:none" id="nut-log-list">
+      ${renderNutritionLog()}
+      <div style="height:20px"></div>
+    </div>
+  `;
+  renderWeightChart();
+}
+
+function setNutTab(tab){
+  ['today','goals','log'].forEach(t=>{
+    document.getElementById(`nut-tab-${t}`).style.display=t===tab?'block':'none';
+    const btn=document.getElementById(`nut-${t}-btn`);
+    if(btn) btn.classList.toggle('active',t===tab);
+  });
+}
+
+function saveNutrition(){
+  const today=todayKey();
+  const data=load();
+  if(!data.nutrition[today]) data.nutrition[today]={};
+  ['calories','protein','carbs','fat','water','weight'].forEach(k=>{
+    const el=document.getElementById('nut-'+k);
+    if(el) data.nutrition[today][k]=parseFloat(el.value)||0;
+  });
+  save(data);
+  showToast('Saved!');
+}
+
+function saveGoals(){
+  const data=load();
+  if(!data.nutrition.goals) data.nutrition.goals={};
+  ['goal_calories','goal_protein','goal_carbs','goal_fat','goal_water'].forEach(k=>{
+    const el=document.getElementById(k);
+    if(el) data.nutrition.goals[k]=parseFloat(el.value)||0;
+  });
+  save(data);
+  showToast('Goals updated!');
+}
+
+function renderNutritionLog(){
+  const data=load();
+  const entries=Object.entries(data.nutrition)
+    .filter(([k])=>k!=='goals'&&k.match(/^\d{4}-\d{2}-\d{2}$/))
+    .sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14);
+  if(!entries.length) return `<div style="text-align:center;color:var(--muted);padding:40px;font-size:13px">No nutrition logged yet</div>`;
+  return entries.map(([date,nt])=>`
+    <div class="history-item" style="margin-top:8px">
+      <div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:13px;font-weight:700">${formatDate(date)}</div>
+        ${nt.weight?`<div style="font-size:14px;font-weight:900;color:var(--accent)">${nt.weight} kg</div>`:''}
+      </div>
+      <div class="history-stats" style="padding:8px 12px">
+        <div class="h-stat"><div class="h-stat-val">${nt.calories||0}</div><div class="h-stat-lbl">kcal</div></div>
+        <div class="h-stat"><div class="h-stat-val">${nt.protein||0}g</div><div class="h-stat-lbl">Protein</div></div>
+        <div class="h-stat"><div class="h-stat-val">${nt.carbs||0}g</div><div class="h-stat-lbl">Carbs</div></div>
+        <div class="h-stat"><div class="h-stat-val">${nt.fat||0}g</div><div class="h-stat-lbl">Fat</div></div>
+        <div class="h-stat"><div class="h-stat-val">${nt.water?Math.round(nt.water/100)/10+'L':'—'}</div><div class="h-stat-lbl">Water</div></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderWeightChart(){
+  const data=load();
+  const entries=Object.entries(data.nutrition)
+    .filter(([k,v])=>k.match(/^\d{4}-\d{2}-\d{2}$/)&&v.weight>0)
+    .sort((a,b)=>a[0].localeCompare(b[0])).slice(-7);
+  if(entries.length<2) return;
+  const wrap=document.getElementById('weight-chart-wrap');
+  if(!wrap) return;
+  const vals=entries.map(([,v])=>v.weight);
+  const min=Math.min(...vals)-1,max=Math.max(...vals)+1;
+  const w=wrap.offsetWidth||300,h=80;
+  const pts=entries.map(([,v],i)=>{
+    const x=(i/(entries.length-1))*(w-20)+10;
+    const y=h-((v.weight-min)/(max-min))*(h-10)-5;
+    return `${x},${y}`;
+  }).join(' ');
+  wrap.innerHTML=`<div style="margin:0 10px 8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+    <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Weight Trend (7 days)</div>
+    <svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}">
+      <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
+      ${entries.map(([,v],i)=>{const x=(i/(entries.length-1))*(w-20)+10;const y=h-((v.weight-min)/(max-min))*(h-10)-5;return `<circle cx="${x}" cy="${y}" r="3" fill="var(--accent)"/>`;}).join('')}
+    </svg>
+    <div style="display:flex;justify-content:space-between;margin-top:4px">
+      <span style="font-size:9px;color:var(--muted)">${entries[0][0].slice(5)}</span>
+      <span style="font-size:9px;color:var(--muted)">${entries[entries.length-1][0].slice(5)}</span>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════
+function setHistoryTab(tab,el){
+  historyTab=tab;
+  document.querySelectorAll('#screen-history .tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderHistory();
+}
+
+function renderHistory(){
+  let {workouts}=load();
+  if(historyTab==='strength') workouts=workouts.filter(w=>w.sessionType==='strength');
+  if(historyTab==='hiit') workouts=workouts.filter(w=>w.sessionType==='hiit');
+  const el=document.getElementById('history-list');
+  if(!workouts.length){
+    el.innerHTML=`<div class="history-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="56" height="56"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg><div style="font-size:15px;font-weight:800">No sessions yet</div></div>`;
+    return;
+  }
+  el.innerHTML=workouts.map((w,i)=>{
+    const date=new Date(w.date);
+    const ds=date.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+    const ts=date.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    const mins=Math.floor(w.duration/60);
+    const isHIIT=w.sessionType==='hiit';
+    const tc=isHIIT?'hiit':{push:'push',pull:'pull',legs:'legs'}[w.type]||'push';
+    const doneSets=isHIIT?w.exercises.length:w.exercises.reduce((a,ex)=>a+ex.sets.filter(s=>s.done).length,0);
+    const vol=isHIIT?0:w.exercises.reduce((a,ex)=>a+ex.sets.reduce((b,s)=>b+(s.done?(parseFloat(s.weight)||0)*(parseFloat(s.reps)||0):0),0),0);
+    return `<div class="history-item">
+      <div class="history-head">
+        <div><h3>${w.name}</h3><div class="history-date">${ds} · ${ts}</div></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="badge ${tc}-badge">${isHIIT?'HIIT':w.type}</span>
+          <button class="history-expand" onclick="toggleHistory(${i},this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="history-stats">
+        <div class="h-stat"><div class="h-stat-val">${mins}m</div><div class="h-stat-lbl">Time</div></div>
+        <div class="h-stat"><div class="h-stat-val">${isHIIT?w.exercises.length+'ex':doneSets+' sets'}</div><div class="h-stat-lbl">${isHIIT?'Exercises':'Sets'}</div></div>
+        <div class="h-stat"><div class="h-stat-val">${isHIIT?(w.caloriesBurned||'~'+(mins*10))+' kcal':vol>0?Math.round(vol)+'kg':'—'}</div><div class="h-stat-lbl">${isHIIT?'Burned':'Volume'}</div></div>
+      </div>
+      <div class="history-detail" id="hd-${i}">
+        ${w.exercises.map(ex=>{
+          const best=ex.sets.filter(s=>s.done).reduce((b,s)=>parseFloat(s.weight)>parseFloat(b.weight||0)?s:b,{weight:0});
+          return `<div class="h-ex-row"><div class="h-ex-name">${ex.name}</div><div class="h-ex-data">${isHIIT?'Completed':ex.sets.filter(s=>s.done).length+' sets · Best: '+(best.weight?best.weight+'kg×'+best.reps:'—')}</div></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('')+'<div style="height:20px"></div>';
+}
+
+function toggleHistory(i,btn){
+  const d=document.getElementById('hd-'+i);
+  d.classList.toggle('open');
+  btn.style.transform=d.classList.contains('open')?'rotate(180deg)':'';
+}
+
+// ═══════════════════════════════════════════
+// AUDIT
+// ═══════════════════════════════════════════
+function renderAudit(){
+  const data=load();
+  const {workouts,prs}=data;
+  const strength=workouts.filter(w=>w.sessionType==='strength');
+  const hiit=workouts.filter(w=>w.sessionType==='hiit');
+  const totalVol=strength.reduce((a,w)=>a+w.exercises.reduce((b,ex)=>b+ex.sets.reduce((c,s)=>c+(s.done?(parseFloat(s.weight)||0)*(parseFloat(s.reps)||0):0),0),0),0);
+  const totalMins=workouts.reduce((a,w)=>a+Math.floor(w.duration/60),0);
+  const totalCals=hiit.reduce((a,w)=>a+(w.caloriesBurned||Math.floor(w.duration/60)*10),0);
+  const volByType={push:0,pull:0,legs:0,hiit:0};
+  workouts.forEach(w=>{
+    if(w.sessionType==='hiit'){volByType.hiit+=w.duration/60;}
+    else{const v=w.exercises.reduce((a,ex)=>a+ex.sets.reduce((b,s)=>b+(s.done?(parseFloat(s.weight)||0)*(parseFloat(s.reps)||0):0),0),0);if(volByType[w.type]!==undefined)volByType[w.type]+=v;}
+  });
+  const maxV=Math.max(...Object.values(volByType),1);
+  const prList=Object.entries(prs).sort((a,b)=>parseFloat(b[1].weight)-parseFloat(a[1].weight));
+
+  document.getElementById('audit-content').innerHTML=`
+    <div class="audit-summary">
+      <div class="audit-card"><div class="audit-val">${strength.length}</div><div class="audit-lbl">Strength Sessions</div></div>
+      <div class="audit-card"><div class="audit-val">${hiit.length}</div><div class="audit-lbl">HIIT Sessions</div></div>
+      <div class="audit-card"><div class="audit-val">${totalMins}m</div><div class="audit-lbl">Total Time</div></div>
+      <div class="audit-card"><div class="audit-val">${totalCals>0?totalCals+'kcal':'—'}</div><div class="audit-lbl">HIIT Calories</div></div>
+    </div>
+
+    <div class="section-title">Volume by Split</div>
+    <div class="vol-bars">
+      <div class="vol-bar-wrap">
+        ${[['push','Push','var(--push)'],['pull','Pull','var(--pull)'],['legs','Legs','var(--legs)'],['hiit','HIIT','var(--hiit)']].map(([k,lbl,color])=>`
+          <div class="vol-bar-col">
+            <div class="vol-bar-val" style="color:${color}">${k==='hiit'?Math.round(volByType[k])+'m':volByType[k]>0?Math.round(volByType[k]/1000)+'t':'0'}</div>
+            <div class="vol-bar" style="height:${Math.round((volByType[k]/maxV)*60)+3}px;background:${color}"></div>
+            <div class="vol-bar-lbl">${lbl}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="section-title">Personal Records</div>
+    ${prList.length===0
+      ?`<div style="text-align:center;color:var(--muted);padding:30px;font-size:13px">Complete workouts to track PRs</div>`
+      :prList.map(([name,pr])=>`<div class="pr-item">
+          <div><div class="pr-name">${name}</div><div class="pr-meta">${formatDate(pr.date.split('T')[0])} · ${pr.reps} reps</div></div>
+          <div class="pr-weight">${pr.weight}kg</div>
+        </div>`).join('')}
+
+    <div class="section-title">Body Weight Progress</div>
+    ${renderWeightAudit(data)}
+    <div style="height:20px"></div>
+  `;
+}
+
+function renderWeightAudit(data){
+  const entries=Object.entries(data.nutrition)
+    .filter(([k,v])=>k.match(/^\d{4}-\d{2}-\d{2}$/)&&v.weight>0)
+    .sort((a,b)=>a[0].localeCompare(b[0]));
+  if(entries.length<2) return `<div style="text-align:center;color:var(--muted);padding:20px;font-size:12px">Log your weight in Nutrition to track progress</div>`;
+  const first=entries[0][1].weight,last=entries[entries.length-1][1].weight;
+  const diff=(last-first).toFixed(1);
+  return `<div style="margin:0 10px 8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-size:12px;color:var(--muted)">Start → Current</div>
+      <div style="font-size:20px;font-weight:900;margin-top:4px">${first} → ${last} kg</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:var(--muted)">Change</div>
+      <div style="font-size:24px;font-weight:900;color:${diff<0?'var(--green)':diff>0?'var(--red)':'var(--muted)'}">${diff>0?'+':''}${diff} kg</div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// REST TIMER
+// ═══════════════════════════════════════════
+function startRestTimer(secs){
+  if(restTimerInterval) clearInterval(restTimerInterval);
+  let r=secs;
+  document.getElementById('rest-secs').textContent=r;
+  document.getElementById('rest-overlay').classList.remove('hidden');
+  restTimerInterval=setInterval(()=>{r--;document.getElementById('rest-secs').textContent=r;if(r<=0)skipRest();},1000);
+}
+function skipRest(){if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}document.getElementById('rest-overlay').classList.add('hidden');}
+
+// ═══════════════════════════════════════════
+// SHARE / EXPORT
+// ═══════════════════════════════════════════
+function getExportData(){
+  const d=load();
+  return JSON.stringify({exported:new Date().toISOString(),app:'PPL + Fat Loss Tracker',
+    summary:{totalWorkouts:d.workouts.length,personalRecords:d.prs},
+    workouts:d.workouts,nutrition:d.nutrition},null,2);
+}
+function renderShare(){
+  const d=load();
+  document.getElementById('share-preview').textContent=
+    d.workouts.length?getExportData().substring(0,600)+'...\n(truncated)':'No data yet. Complete a session first!';
+}
+function shareData(){
+  const text=getExportData();
+  if(navigator.share){
+    try{navigator.share({title:'PPL + Fat Loss Tracker Data',files:[new File([text],'ppl-data.json',{type:'application/json'})]});}
+    catch{copyData();}
+  }else{copyData();}
+}
+function copyData(){navigator.clipboard.writeText(getExportData()).then(()=>showToast('Copied!')).catch(()=>showToast('Copy failed — try Download'));}
+function downloadData(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([getExportData()],{type:'application/json'}));
+  a.download=`ppl-tracker-${todayKey()}.json`;
+  a.click();showToast('Downloaded!');
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function pad(n){return String(n).padStart(2,'0');}
+function todayKey(){return new Date().toISOString().split('T')[0];}
+function formatDate(d){try{return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}catch{return d;}}
+
+let toastT;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  if(toastT)clearTimeout(toastT);
+  toastT=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// INIT
+renderHome();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
