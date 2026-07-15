@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="PPL Tracker">
 <link rel="manifest" href="manifest.json">
 <title>PPL + Fat Loss Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Epilogue:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#0a0a0a; --surface:#111; --card:#161616; --border:#1e1e1e;
@@ -18,7 +19,7 @@
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilogue',sans-serif;overflow:hidden;}
 
 /* SCREENS */
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;}
@@ -32,8 +33,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 
 /* TOPBAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
-.topbar h1{font-size:19px;font-weight:800;letter-spacing:-.3px;}
-.topbar h1 span{color:var(--accent);}
+.topbar h1{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;letter-spacing:-.5px;}
+.topbar h1 span{color:var(--accent);font-style:italic;}
 .icon-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;}
 
 /* SCROLL */
@@ -49,7 +50,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .day-chip.legs{border-bottom:3px solid var(--legs);}
 .day-chip.hiit{border-bottom:3px solid var(--hiit);}
 .day-chip.rest{border-bottom:3px solid var(--muted);}
-.chip-day{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;}
+.chip-day{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:3px;}
 .chip-type{font-size:10px;font-weight:800;}
 .day-chip.push .chip-type{color:var(--push);}
 .day-chip.pull .chip-type{color:var(--pull);}
@@ -60,8 +61,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 /* CARDS */
 .session-card{margin:0 10px 8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .session-head{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.session-head h2{font-size:16px;font-weight:800;}
-.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.08em;}
+.session-head h2{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;}
+.badge{font-family:'DM Mono',monospace;font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.1em;}
 .push-badge{background:rgba(244,63,94,.15);color:var(--push);}
 .pull-badge{background:rgba(59,130,246,.15);color:var(--pull);}
 .legs-badge{background:rgba(249,115,22,.15);color:var(--legs);}
@@ -81,7 +82,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 
 /* WORKOUT SCREEN */
 .workout-header{padding:12px 14px;background:var(--surface);border-bottom:1px solid var(--border);}
-.workout-title{font-size:17px;font-weight:900;}
+.workout-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;}
 .workout-subtitle{font-size:11px;color:var(--muted);margin-top:2px;}
 .timer-pill{display:inline-flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:800;color:var(--accent);margin-top:8px;}
 
@@ -106,7 +107,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .hiit-phase.work-phase{background:rgba(239,68,68,.1);border-color:var(--red);}
 .hiit-phase.rest-phase{background:rgba(34,197,94,.1);border-color:var(--green);}
 .hiit-phase.prep-phase{background:rgba(168,85,247,.1);border-color:var(--hiit);}
-.phase-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;margin-bottom:8px;}
+.phase-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.2em;margin-bottom:8px;}
 .phase-time{font-size:72px;font-weight:900;line-height:1;}
 .phase-exercise{font-size:16px;font-weight:700;margin-top:10px;}
 .phase-next{font-size:12px;color:var(--muted);margin-top:6px;}
@@ -121,7 +122,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .macro-ring svg{transform:rotate(-90deg);}
 .macro-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .macro-ring-val{font-size:20px;font-weight:900;}
-.macro-ring-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.macro-ring-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;}
 
 .nutrition-input-card{margin:0 10px 8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
 .nut-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
@@ -139,7 +140,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .cal-stat b{color:var(--text);}
 
 .tip-card{margin:0 10px 8px;background:rgba(232,255,0,.04);border:1px solid rgba(232,255,0,.1);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;}
-.tip-title{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;}
+.tip-title{font-family:'DM Mono',monospace;font-size:9px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:6px;}
 .tip-text{font-size:12px;color:#aaa;line-height:1.7;}
 
 /* HISTORY/AUDIT */
@@ -390,62 +391,58 @@ function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
 // PROGRAM DATA
 // ═══════════════════════════════════════════
 const PROGRAM = {
-  'push-a':{name:'Push A',type:'push',day:'Monday',subtitle:'Chest · Shoulders · Triceps — Strength',
+  'push-a':{name:'Push A',type:'push',day:'Monday',subtitle:'Chest · Shoulders · Triceps · Strength',
     exercises:[
-      {name:'Barbell Bench Press',sets:5,reps:'3–5',rest:210,tip:'Arch slightly, retract scapula, touch chest every rep',badge:'Compound'},
-      {name:'Overhead Press (Barbell)',sets:4,reps:'4–6',rest:180,tip:'Brace core, bar path slightly forward, full lock out',badge:'Compound'},
-      {name:'Incline Dumbbell Press',sets:3,reps:'8–10',rest:120,tip:'30–45° angle, full stretch at bottom',badge:'Compound'},
-      {name:'Cable Lateral Raise',sets:4,reps:'12–15',rest:90,tip:'Cross-body cable, constant tension on side delts',badge:'Isolation'},
-      {name:'Tricep Pushdown (Rope)',sets:3,reps:'10–12',rest:90,tip:'Flare rope at bottom, hard squeeze',badge:'Isolation'},
-      {name:'Overhead Tricep Extension',sets:3,reps:'10–12',rest:90,tip:'EZ-bar, elbows tucked, full overhead ROM',badge:'Isolation'},
+      {name:'Barbell Bench Press',sets:5,reps:'3–5',rest:210,tip:'Touch chest, controlled descent, elbows 45–75°.',badge:'Compound'},
+      {name:'Overhead Press (Barbell)',sets:4,reps:'4–6',rest:180,tip:'Core braced, slight lean back at lockout, bar path straight up.',badge:'Compound'},
+      {name:'Incline DB Press',sets:3,reps:'8–10',rest:120,tip:'30–45°, full stretch at bottom, squeeze at top.',badge:'Compound'},
+      {name:'Cable Lateral Raise',sets:4,reps:'12–15',rest:90,tip:'Cross-body cable — constant tension unlike dumbbells.',badge:'Isolation'},
+      {name:'Tricep Pushdown (Rope)',sets:3,reps:'10–12',rest:90,tip:'Flare rope at bottom, full extension, hard squeeze.',badge:'Isolation'},
+      {name:'Overhead Tricep Extension (EZ-bar)',sets:3,reps:'10–12',rest:90,tip:'Elbows tucked, full stretch overhead, full ROM.',badge:'Isolation'},
     ]},
-  'pull-a':{name:'Pull A',type:'pull',day:'Tuesday',subtitle:'Back · Biceps — Strength',
+  'pull-a':{name:'Pull A',type:'pull',day:'Tuesday',subtitle:'Back · Biceps · Strength',
     exercises:[
-      {name:'Weighted Pull-Up',sets:4,reps:'4–6',rest:210,tip:'Full dead hang, chin clears bar — add weight progressively',badge:'Compound'},
-      {name:'Barbell Bent-Over Row',sets:4,reps:'4–6',rest:180,tip:'Overhand grip, row to lower chest, retract scapula',badge:'Compound'},
-      {name:'Seated Cable Row',sets:3,reps:'8–10',rest:120,tip:"Don't rock torso — isolate the back squeeze",badge:'Compound'},
-      {name:'Straight-Arm Pulldown',sets:3,reps:'12–15',rest:90,tip:'Arms straight, feel lats stretching at top',badge:'Isolation'},
-      {name:'Barbell Curl',sets:4,reps:'5–7',rest:120,tip:'Strict — no swinging. Supinate fully at top',badge:'Isolation'},
-      {name:'Incline Dumbbell Curl',sets:3,reps:'10–12',rest:90,tip:'45° bench — full bicep stretch at bottom',badge:'Isolation'},
-      {name:'Face Pull (Cable)',sets:3,reps:'15–20',rest:60,tip:'Rope to forehead, external rotation — shoulder health',badge:'Accessory'},
+      {name:'Weighted Pull-Up',sets:4,reps:'4–6',rest:210,tip:'Full dead hang, chin clears bar. Add weight via belt progressively.',badge:'Compound'},
+      {name:'Seated Cable Row',sets:4,reps:'6–8',rest:150,tip:"Don't rock — isolate the squeeze. Elbows back, chest up. This is your primary row.",badge:'Compound'},
+      {name:'Lat Pulldown (Wide Grip)',sets:3,reps:'8–10',rest:120,tip:'Slight lean back, pull to upper chest, full stretch at top.',badge:'Compound'},
+      {name:'Bicep Curl Machine',sets:4,reps:'8–10',rest:90,tip:"Full ROM, slow 3s negative. Keep upper arms fixed on the pad — don't let elbows lift.",badge:'Isolation'},
+      {name:'Hammer Curl (DB)',sets:3,reps:'10–12',rest:90,tip:'Neutral grip, no swinging — targets brachialis (underneath bicep).',badge:'Isolation'},
+      {name:'Face Pull (Cable)',sets:3,reps:'15–20',rest:60,tip:'Rope to forehead, external rotation. Light weight only.',badge:'Accessory'},
     ]},
-  'legs-a':{name:'Legs A',type:'legs',day:'Wednesday',subtitle:'Quad Dominant — Squat Focus',
+  'legs-a':{name:'Legs A',type:'legs',day:'Wednesday',subtitle:'Quads · Glutes · Calves · Squat Focus',
     exercises:[
-      {name:'Barbell Back Squat',sets:5,reps:'3–5',rest:210,tip:'Break parallel, brace hard, knees track toes',badge:'Compound'},
-      {name:'Romanian Deadlift',sets:3,reps:'8–10',rest:180,tip:'Hinge at hips, feel hamstring load, no rounding',badge:'Compound'},
-      {name:'Leg Press',sets:3,reps:'10–12',rest:120,tip:'High foot placement for glutes, full depth',badge:'Compound'},
-      {name:'Leg Extension',sets:3,reps:'12–15',rest:90,tip:'Slow 3s negative, squeeze hard at top',badge:'Isolation'},
-      {name:'Seated Calf Raise',sets:4,reps:'12–15',rest:60,tip:'Full stretch at bottom, 1s pause, explosive up',badge:'Isolation'},
-      {name:'Ab Wheel / Plank',sets:3,reps:'AMRAP',rest:60,tip:'Core finisher — 45s hold or failure',badge:'Accessory'},
+      {name:'Barbell Back Squat',sets:5,reps:'3–5',rest:210,tip:'Break parallel, brace core, knees track toes.',badge:'Compound'},
+      {name:'Romanian Deadlift',sets:3,reps:'8–10',rest:150,tip:'Hinge — feel hamstrings load. No rounding. Bar drags down thighs.',badge:'Compound'},
+      {name:'Leg Press',sets:3,reps:'10–12',rest:120,tip:"High, wide foot — glute emphasis. Full depth, don't lock out knees.",badge:'Compound'},
+      {name:'Leg Extension',sets:3,reps:'12–15',rest:90,tip:'3s negative, squeeze at top for 1 second.',badge:'Isolation'},
+      {name:'Standing Calf Raise',sets:4,reps:'15–20',rest:60,tip:'Full stretch at bottom, explosive up, 1s pause at top. See calf note below.',badge:'Isolation'},
+      {name:'Ab Wheel / Plank',sets:3,reps:'failure',rest:60,tip:'3 sets to failure or 45s plank. Keep lower back flat.',badge:'Core'},
     ]},
-  'push-b':{name:'Push B',type:'push',day:'Thursday',subtitle:'Chest · Shoulders · Triceps — Volume',
+  'push-b':{name:'Push B',type:'push',day:'Thursday',subtitle:'Chest · Shoulders · Triceps · Volume',
     exercises:[
-      {name:'Incline Barbell Press',sets:4,reps:'4–6',rest:180,tip:'30° incline — upper chest focus',badge:'Compound'},
-      {name:'Dumbbell Shoulder Press',sets:4,reps:'6–8',rest:150,tip:'Neutral grip, full ROM',badge:'Compound'},
-      {name:'Flat Dumbbell Flye',sets:3,reps:'10–12',rest:90,tip:'Wide arc, stretch pec at bottom',badge:'Isolation'},
-      {name:'Machine Chest Press',sets:3,reps:'12–15',rest:90,tip:'Burnout — controlled reps, squeeze chest',badge:'Accessory'},
-      {name:'Seated Lateral Raise',sets:4,reps:'12–15',rest:60,tip:'Lead with elbows not wrists',badge:'Isolation'},
-      {name:'Weighted Dips',sets:3,reps:'8–10',rest:120,tip:'Forward lean for chest emphasis, full depth',badge:'Compound'},
-      {name:'Single-Arm Cable Pushdown',sets:3,reps:'12 each',rest:60,tip:'Greater isolation than two-arm version',badge:'Isolation'},
+      {name:'Incline Barbell Press',sets:4,reps:'4–6',rest:180,tip:'30° only — steep incline shifts load to shoulders not upper chest.',badge:'Compound'},
+      {name:'DB Shoulder Press',sets:4,reps:'6–8',rest:120,tip:'Greater ROM than barbell. Fixes shoulder imbalances.',badge:'Compound'},
+      {name:'Pec Deck / Pec Fly Machine',sets:3,reps:'10–12',rest:90,tip:"Feel the stretch at the widest point. Squeeze hard at the middle. Don't slam the weight.",badge:'Isolation'},
+      {name:'Seated Lateral Raise (DB)',sets:4,reps:'12–15',rest:60,tip:'Lean forward slightly. Lead with elbows, slow 3s negative.',badge:'Isolation'},
+      {name:'Weighted Dips',sets:3,reps:'8–10',rest:120,tip:'Slight forward lean for chest emphasis. Bodyweight first, then add load.',badge:'Compound'},
+      {name:'Single-Arm Cable Pushdown',sets:3,reps:'12 each',rest:60,tip:'Full extension, wrist neutral, feel the lateral head fire.',badge:'Isolation'},
     ]},
-  'pull-b':{name:'Pull B',type:'pull',day:'Friday',subtitle:'Back · Biceps — Volume & Thickness',
+  'pull-b':{name:'Pull B',type:'pull',day:'Friday',subtitle:'Back · Biceps · Deadlift + Volume',
     exercises:[
-      {name:'Conventional Deadlift',sets:4,reps:'3–5',rest:210,tip:'Bar over mid-foot, lat engagement before pull',badge:'Compound'},
-      {name:'Chest-Supported DB Row',sets:4,reps:'8–10',rest:120,tip:'Chest on incline bench — pure back work',badge:'Compound'},
-      {name:'Wide-Grip Lat Pulldown',sets:3,reps:'10–12',rest:90,tip:'Pull to upper chest, stretch fully at top',badge:'Compound'},
-      {name:'Single-Arm DB Row',sets:3,reps:'10 each',rest:90,tip:'Elbow drives back — big ROM',badge:'Accessory'},
-      {name:'Hammer Curl',sets:4,reps:'8–10',rest:90,tip:'Neutral grip — brachialis for arm thickness',badge:'Isolation'},
-      {name:'Cable Curl (EZ-bar)',sets:3,reps:'12–15',rest:60,tip:'Constant tension, slow negative',badge:'Isolation'},
-      {name:'Rear Delt Fly',sets:3,reps:'15',rest:60,tip:'Elbows wide — shoulder balance',badge:'Isolation'},
+      {name:'Conventional Deadlift',sets:4,reps:'3–5',rest:210,tip:'Bar over mid-foot, chest up, lat engagement before pull. See form guide.',badge:'Compound'},
+      {name:'Chest-Supported DB Row',sets:4,reps:'8–10',rest:120,tip:'Lie chest on 45° bench — eliminates all body English. Pure back work.',badge:'Compound'},
+      {name:'Wide-Grip Lat Pulldown',sets:3,reps:'10–12',rest:90,tip:'Slight lean back, pull to upper chest, full stretch at top.',badge:'Compound'},
+      {name:'Bicep Curl Machine',sets:4,reps:'10–12',rest:90,tip:'Full ROM, 3s negative. Upper arms fixed on pad at all times.',badge:'Isolation'},
+      {name:'Incline DB Curl',sets:3,reps:'10–12',rest:90,tip:'Lie on 45° bench — maximum bicep stretch at bottom.',badge:'Isolation'},
+      {name:'Rear Delt Fly (Machine)',sets:3,reps:'15',rest:60,tip:'Elbows slightly bent, lead wide. Prevents internal rotation.',badge:'Isolation'},
     ]},
-  'legs-b':{name:'Legs B',type:'legs',day:'Saturday',subtitle:'Posterior Chain — Hamstrings & Glutes',
+  'legs-b':{name:'Legs B',type:'legs',day:'Saturday',subtitle:'Glutes · Hamstrings · Posterior Chain',
     exercises:[
-      {name:'Barbell Hip Thrust',sets:4,reps:'6–8',rest:180,tip:'Drive through heels, squeeze glutes at top',badge:'Compound'},
-      {name:'Bulgarian Split Squat',sets:4,reps:'8 each',rest:120,tip:'Rear foot elevated, lean forward slightly',badge:'Compound'},
-      {name:'Seated Leg Curl',sets:4,reps:'10–12',rest:90,tip:'Slow 3s negative — max hamstring stretch',badge:'Isolation'},
-      {name:'Stiff-Leg Deadlift (DB)',sets:3,reps:'10–12',rest:120,tip:'More stretch than RDL, slight knee bend',badge:'Compound'},
-      {name:'Cable Glute Kickback',sets:3,reps:'15 each',rest:60,tip:'Squeeze at top, controlled return',badge:'Isolation'},
-      {name:'Standing Calf Raise',sets:5,reps:'15',rest:60,tip:'Full ROM, 3s negative — calves need volume',badge:'Isolation'},
+      {name:'Sumo Deadlift',sets:4,reps:'5–6',rest:180,tip:'Wide stance, toes out ~45°, grip inside legs. Torso more upright than conventional. Drives through heels and squeeze glutes hard at lockout.',badge:'Compound'},
+      {name:'Bulgarian Split Squat (DB)',sets:4,reps:'8 each',rest:120,tip:'Rear foot elevated, lean forward slightly for glute emphasis. Start bodyweight-only for 2 weeks.',badge:'Compound'},
+      {name:'Seated Leg Curl',sets:4,reps:'10–12',rest:90,tip:'Hip flexed = greater hamstring stretch. Slow 3s negative every rep.',badge:'Isolation'},
+      {name:'Stiff-Leg Deadlift (DB)',sets:3,reps:'10–12',rest:120,tip:'More stretch than RDL, slight knee bend. Feel every inch of hamstring.',badge:'Compound'},
+      {name:'Seated Calf Raise',sets:4,reps:'15–20',rest:60,tip:'Full ROM, 3s down, 1s pause at stretch. Add weight week 3 onwards.',badge:'Isolation'},
     ]},
 };
 
@@ -454,22 +451,16 @@ const PROGRAM = {
 // ═══════════════════════════════════════════
 const HIIT_PROTOCOLS = {
   'hiit-a':{
-    name:'HIIT A — Tabata Burners', subtitle:'20s Work / 10s Rest × 8 rounds per exercise',
+    name:'HIIT A — Tabata', subtitle:'20s Work / 10s Rest · 8 rounds each · ~20 min',
     type:'hiit', rounds:8, workSecs:20, restSecs:10,
     exercises:['Burpees','Jump Squats','Mountain Climbers','High Knees'],
     totalMins:20
   },
   'hiit-b':{
-    name:'HIIT B — Sprint Intervals', subtitle:'40s Work / 20s Rest × 6 rounds',
+    name:'HIIT B — Sprint Intervals', subtitle:'40s Work / 20s Rest · 6 rounds · ~24 min',
     type:'hiit', rounds:6, workSecs:40, restSecs:20,
-    exercises:['Treadmill Sprint','Box Jumps','Squat Thrusts','Lateral Shuffles','Jump Lunges','Battle Rope Slams'],
+    exercises:['Treadmill Sprint','Box Jumps','Squat Thrusts','Lateral Shuffles','Jump Lunges'],
     totalMins:24
-  },
-  'hiit-c':{
-    name:'HIIT C — EMOM Conditioning', subtitle:'Every Minute On the Minute × 20 min',
-    type:'hiit', rounds:4, workSecs:40, restSecs:20,
-    exercises:['KB Swings','Push-up Burpees','Jump Rope / Fast Feet','Plank to Push-up','Tuck Jumps'],
-    totalMins:20
   }
 };
 
