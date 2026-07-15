@@ -1,0 +1,11 @@
+git checkout HEAD -- workout_tracker/lib/models.dart
+git checkout HEAD -- workout_tracker/lib/providers.dart
+git checkout HEAD -- workout_tracker/lib/theme.dart
+git checkout HEAD -- workout_tracker/lib/database_helper.dart
+git checkout HEAD -- workout_tracker/lib/main.dart
+git checkout HEAD -- workout_tracker/lib/screens/workout_screen.dart
+git checkout HEAD -- workout_tracker/lib/screens/active_workout.dart
+git checkout HEAD -- workout_tracker/lib/screens/nutrition_screen.dart
+git checkout HEAD -- workout_tracker/lib/screens/settings_screen.dart
+git checkout HEAD -- workout_tracker/lib/export_helper.dart
+git checkout HEAD -- workout_tracker/test/widget_test.dart

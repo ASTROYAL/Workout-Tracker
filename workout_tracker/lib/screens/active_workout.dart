@@ -1,0 +1,231 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+import '../models.dart';
+import '../providers.dart';
+import '../theme.dart';
+
+class ActiveWorkoutScreen extends StatefulWidget {
+  final RoutineModel routine;
+
+  const ActiveWorkoutScreen({super.key, required this.routine});
+
+  @override
+  State<ActiveWorkoutScreen> createState() => _ActiveWorkoutScreenState();
+}
+
+class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
+  late DateTime _startTime;
+  final Map<String, List<SetModel>> _exerciseSets = {};
+  bool _includeHIIT = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTime = DateTime.now();
+    for (var exercise in widget.routine.exercises) {
+      _exerciseSets[exercise.name] = List.generate(
+        exercise.sets,
+        (index) => SetModel(
+          id: const Uuid().v4(),
+          exerciseName: exercise.name,
+          reps: 0,
+          weight: 0.0,
+          isCompleted: false,
+        ),
+      );
+    }
+  }
+
+  void _finishWorkout() {
+    int duration = DateTime.now().difference(_startTime).inSeconds;
+    double volume = 0;
+    List<SetModel> allSets = [];
+
+    for (var exerciseSets in _exerciseSets.values) {
+      for (var set in exerciseSets) {
+        if (set.isCompleted) {
+          volume += set.weight * set.reps;
+          allSets.add(set);
+        }
+      }
+    }
+
+    if (_includeHIIT) {
+       allSets.add(SetModel(
+         id: const Uuid().v4(),
+         exerciseName: 'HIIT (Post-Workout)',
+         reps: 1,
+         weight: 0,
+         isCompleted: true,
+       ));
+    }
+
+    final workout = WorkoutModel(
+      id: const Uuid().v4(),
+      date: DateTime.now(),
+      routineId: widget.routine.id,
+      durationSeconds: duration,
+      volume: volume,
+      sets: allSets,
+    );
+
+    context.read<WorkoutProvider>().saveWorkout(workout);
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Workout Saved!')),
+    );
+  }
+
+  void _showFormGuide(RoutineExerciseModel exercise) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.card,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.8,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (_, controller) => Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: ListView(
+            controller: controller,
+            children: [
+              Text(exercise.name, style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(exercise.tip, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic)),
+              const SizedBox(height: 24),
+              if (exercise.setup.isNotEmpty) ...[
+                Text('SETUP', style: Theme.of(context).textTheme.labelSmall),
+                const SizedBox(height: 8),
+                ...exercise.setup.map((s) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text('• $s', style: Theme.of(context).textTheme.bodyMedium),
+                )),
+                const SizedBox(height: 16),
+              ],
+              if (exercise.execution.isNotEmpty) ...[
+                Text('EXECUTION', style: Theme.of(context).textTheme.labelSmall),
+                const SizedBox(height: 8),
+                ...exercise.execution.map((s) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text('• $s', style: Theme.of(context).textTheme.bodyMedium),
+                )),
+                const SizedBox(height: 16),
+              ],
+              if (exercise.mistakes.isNotEmpty) ...[
+                Text('FEEL & MISTAKES', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppTheme.accent)),
+                const SizedBox(height: 8),
+                ...exercise.mistakes.map((s) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(s, style: Theme.of(context).textTheme.bodyMedium),
+                )),
+              ]
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.routine.name),
+        actions: [
+          TextButton(
+            onPressed: _finishWorkout,
+            child: const Text('FINISH', style: TextStyle(color: AppTheme.accent, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          ...widget.routine.exercises.map((exercise) {
+            final sets = _exerciseSets[exercise.name]!;
+            return Card(
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(exercise.name, style: Theme.of(context).textTheme.titleMedium),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.info_outline, color: AppTheme.accent2),
+                          onPressed: () => _showFormGuide(exercise),
+                        ),
+                      ],
+                    ),
+                    Text('Target: ${exercise.sets} sets x ${exercise.reps} | Rest: ${exercise.restSeconds}s',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.muted)),
+                    const SizedBox(height: 16),
+                    ...sets.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      SetModel set = entry.value;
+                      return Row(
+                        children: [
+                          SizedBox(width: 30, child: Text('${index + 1}', style: Theme.of(context).textTheme.labelSmall)),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: TextField(
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(hintText: 'kg', isDense: true),
+                                onChanged: (val) => set.weight = double.tryParse(val) ?? 0,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: TextField(
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(hintText: 'reps', isDense: true),
+                                onChanged: (val) => set.reps = int.tryParse(val) ?? 0,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              set.isCompleted ? Icons.check_circle : Icons.check_circle_outline,
+                              color: set.isCompleted ? AppTheme.accent3 : AppTheme.border,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                set.isCompleted = !set.isCompleted;
+                              });
+                            },
+                          ),
+                        ],
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            );
+          }),
+          CheckboxListTile(
+            title: const Text('Add 15m HIIT (Post-Workout)'),
+            value: _includeHIIT,
+            activeColor: AppTheme.hiit,
+            onChanged: (val) {
+              setState(() {
+                _includeHIIT = val ?? false;
+              });
+            },
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+}
