@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'theme.dart';
 import 'providers.dart';
 import 'screens/workout_screen.dart';
+import 'screens/history_screen.dart';
 import 'screens/nutrition_screen.dart';
 import 'screens/settings_screen.dart';
 
@@ -44,6 +45,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   final List<Widget> _screens = [
     const WorkoutScreen(),
+    const HistoryScreen(),
     const NutritionScreen(),
     const SettingsScreen(),
   ];
@@ -59,10 +61,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             _currentIndex = index;
           });
         },
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
             label: 'TRAIN',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'HISTORY',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.restaurant),

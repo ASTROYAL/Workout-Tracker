@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../providers.dart';
 import '../theme.dart';
 
@@ -29,7 +30,7 @@ class NutritionScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('DAILY TARGET', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white54)),
+                Text('REMAINING', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white54)),
                 const SizedBox(height: 8),
                 Text(
                   '${provider.targetCalories - day.calories}',
@@ -45,6 +46,8 @@ class NutritionScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 24),
+          _buildWeightTracker(context, provider),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -67,6 +70,92 @@ class NutritionScreen extends StatelessWidget {
               ),
             ),
           ))
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeightTracker(BuildContext context, NutritionProvider provider) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppTheme.border),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Bodyweight', style: Theme.of(context).textTheme.titleMedium),
+              IconButton(
+                icon: const Icon(Icons.add_circle_outline, color: AppTheme.accent2),
+                onPressed: () {
+                  _showWeightDialog(context, provider);
+                },
+              )
+            ],
+          ),
+          const SizedBox(height: 16),
+          provider.weightLogs.length < 2
+              ? const Text('Log at least 2 weight entries to see the trend chart.')
+              : SizedBox(
+                  height: 150,
+                  child: LineChart(
+                    LineChartData(
+                      gridData: const FlGridData(show: false),
+                      titlesData: const FlTitlesData(
+                        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: provider.weightLogs.asMap().entries.map((e) {
+                            return FlSpot(e.key.toDouble(), e.value['weightKg'] as double);
+                          }).toList(),
+                          isCurved: true,
+                          color: AppTheme.accent2,
+                          barWidth: 3,
+                          isStrokeCapRound: true,
+                          dotData: const FlDotData(show: true),
+                          belowBarData: BarAreaData(show: false),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+        ],
+      ),
+    );
+  }
+
+  void _showWeightDialog(BuildContext context, NutritionProvider provider) {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Log Weight'),
+        content: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(hintText: 'Weight in kg'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              final w = double.tryParse(controller.text);
+              if (w != null) {
+                provider.addWeightLog(w);
+              }
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          )
         ],
       ),
     );

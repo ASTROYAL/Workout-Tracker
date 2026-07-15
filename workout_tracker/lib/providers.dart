@@ -40,14 +40,16 @@ class WorkoutProvider with ChangeNotifier {
 class NutritionProvider with ChangeNotifier {
   NutritionDayModel? _currentDayNutrition;
   List<FoodLogModel> _currentDayLogs = [];
+  List<Map<String, dynamic>> _weightLogs = [];
 
-  final int targetCalories = 1850;
-  final int targetProtein = 116;
-  final int targetCarbs = 210;
-  final int targetFats = 60;
+  int targetCalories = 1850;
+  int targetProtein = 116;
+  int targetCarbs = 210;
+  int targetFats = 60;
 
   NutritionDayModel? get currentDayNutrition => _currentDayNutrition;
   List<FoodLogModel> get currentDayLogs => _currentDayLogs;
+  List<Map<String, dynamic>> get weightLogs => _weightLogs;
 
   String _getTodayStr() {
     return DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -57,10 +59,32 @@ class NutritionProvider with ChangeNotifier {
     loadTodayData();
   }
 
+  Future<void> updateTargets(int c, int p, int carbs, int f) async {
+    targetCalories = c;
+    targetProtein = p;
+    targetCarbs = carbs;
+    targetFats = f;
+    await DatabaseHelper.instance.saveUserSetting('targetCalories', c.toString());
+    await DatabaseHelper.instance.saveUserSetting('targetProtein', p.toString());
+    await DatabaseHelper.instance.saveUserSetting('targetCarbs', carbs.toString());
+    await DatabaseHelper.instance.saveUserSetting('targetFats', f.toString());
+    notifyListeners();
+  }
+
   Future<void> loadTodayData() async {
+    final cals = await DatabaseHelper.instance.getUserSetting('targetCalories');
+    if (cals != null) targetCalories = int.parse(cals);
+    final prot = await DatabaseHelper.instance.getUserSetting('targetProtein');
+    if (prot != null) targetProtein = int.parse(prot);
+    final carbs = await DatabaseHelper.instance.getUserSetting('targetCarbs');
+    if (carbs != null) targetCarbs = int.parse(carbs);
+    final fats = await DatabaseHelper.instance.getUserSetting('targetFats');
+    if (fats != null) targetFats = int.parse(fats);
+
     final dateStr = _getTodayStr();
     _currentDayNutrition = await DatabaseHelper.instance.getNutritionDay(dateStr);
     _currentDayLogs = await DatabaseHelper.instance.getFoodLogs(dateStr);
+    _weightLogs = await DatabaseHelper.instance.getWeightLogs();
 
     if (_currentDayNutrition == null) {
       _currentDayNutrition = NutritionDayModel(
@@ -113,6 +137,13 @@ class NutritionProvider with ChangeNotifier {
       await DatabaseHelper.instance.saveNutritionDay(_currentDayNutrition!);
     }
 
+    notifyListeners();
+  }
+
+  Future<void> addWeightLog(double weight) async {
+    final dateStr = _getTodayStr();
+    await DatabaseHelper.instance.saveWeightLog(dateStr, weight);
+    _weightLogs = await DatabaseHelper.instance.getWeightLogs();
     notifyListeners();
   }
 }

@@ -45,7 +45,7 @@ class ExportHelper {
       ),
     );
 
-    final dir = await getTemporaryDirectory();
+    final dir = await getApplicationDocumentsDirectory();
     final file = File('${dir.path}/workout_log.pdf');
     await file.writeAsBytes(await pdf.save());
 

@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../models.dart';
 import '../providers.dart';
 import '../theme.dart';
+import 'hiit_screen.dart';
 
 class ActiveWorkoutScreen extends StatefulWidget {
   final RoutineModel routine;
@@ -18,6 +20,8 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   late DateTime _startTime;
   final Map<String, List<SetModel>> _exerciseSets = {};
   bool _includeHIIT = false;
+  Timer? _restTimer;
+  int _restSecondsRemaining = 0;
 
   @override
   void initState() {
@@ -34,6 +38,30 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           isCompleted: false,
         ),
       );
+    }
+  }
+
+  @override
+  void dispose() {
+    _restTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startRestTimer(int seconds) {
+    _restTimer?.cancel();
+    setState(() {
+      _restSecondsRemaining = seconds;
+    });
+    if (seconds > 0) {
+      _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        setState(() {
+          if (_restSecondsRemaining > 0) {
+            _restSecondsRemaining--;
+          } else {
+            _restTimer?.cancel();
+          }
+        });
+      });
     }
   }
 
@@ -71,10 +99,25 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     );
 
     context.read<WorkoutProvider>().saveWorkout(workout);
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Workout Saved!')),
-    );
+
+    if (_includeHIIT) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HIITScreen(
+          onFinish: () {
+            Navigator.pop(context); // Pop HIIT screen
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Workout + HIIT Saved!')),
+            );
+          }
+        )),
+      );
+    } else {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Workout Saved!')),
+      );
+    }
   }
 
   void _showFormGuide(RoutineExerciseModel exercise) {
@@ -159,10 +202,11 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                         Expanded(
                           child: Text(exercise.name, style: Theme.of(context).textTheme.titleMedium),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.info_outline, color: AppTheme.accent2),
-                          onPressed: () => _showFormGuide(exercise),
-                        ),
+                        if (exercise.setup.isNotEmpty || exercise.execution.isNotEmpty || exercise.mistakes.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.info_outline, color: AppTheme.accent2),
+                            onPressed: () => _showFormGuide(exercise),
+                          ),
                       ],
                     ),
                     Text('Target: ${exercise.sets} sets x ${exercise.reps} | Rest: ${exercise.restSeconds}s',
@@ -202,6 +246,9 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                             onPressed: () {
                               setState(() {
                                 set.isCompleted = !set.isCompleted;
+                                if (set.isCompleted) {
+                                  _startRestTimer(exercise.restSeconds);
+                                }
                               });
                             },
                           ),
@@ -223,9 +270,29 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               });
             },
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 80), // extra padding for bottom sheet
         ],
       ),
+      bottomSheet: _restSecondsRemaining > 0 ? Container(
+        color: AppTheme.card,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Rest: ${_restSecondsRemaining ~/ 60}:${(_restSecondsRemaining % 60).toString().padLeft(2, '0')}',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.paper)),
+            TextButton(
+              onPressed: () {
+                _restTimer?.cancel();
+                setState(() {
+                  _restSecondsRemaining = 0;
+                });
+              },
+              child: const Text('SKIP REST', style: TextStyle(color: AppTheme.accent)),
+            )
+          ],
+        ),
+      ) : null,
     );
   }
 }
