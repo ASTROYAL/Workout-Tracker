@@ -32,11 +32,21 @@ class NutritionScreen extends StatelessWidget {
               children: [
                 Text('REMAINING', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white54)),
                 const SizedBox(height: 8),
-                Text(
-                  '${provider.targetCalories - day.calories}',
-                  style: Theme.of(context).textTheme.displayMedium?.copyWith(color: AppTheme.paper),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      '${provider.targetCalories - day.calories}',
+                      style: Theme.of(context).textTheme.displayMedium?.copyWith(color: AppTheme.paper),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '/ ${provider.targetCalories} kcal',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white54),
+                    ),
+                  ],
                 ),
-                Text('kcal remaining', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white54)),
                 const SizedBox(height: 24),
                 _buildMacroBar(context, 'Protein', day.protein, provider.targetProtein, AppTheme.pull),
                 const SizedBox(height: 12),
