@@ -1,17 +1,29 @@
-# workout_tracker
+# Workout Tracker
 
-A new Flutter project.
+A fully offline, SQLite-backed Flutter application designed for body recomposition training.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- **Training**: 6-day PPL split routines with fully guided form tips.
+- **Nutrition**: Track your daily macronutrients (calories, protein, carbs, fats) tailored for a vegetarian recomp diet.
+- **Progress Tracking**: Track your workouts, log history and track your bodyweight trends using charts.
+- **Offline First**: All data is stored locally on your device via SQLite.
+- **Share**: Export your logs as PDF or share them directly with others.
 
-A few resources to get you started if this is your first Flutter project:
+## Building and Running
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Ensure you have Flutter installed.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Fetch dependencies:
+   ```bash
+   flutter pub get
+   ```
+
+2. Build the Release APK:
+   ```bash
+   flutter build apk --release
+   ```
+   The built APK will be located at `build/app/outputs/flutter-apk/app-release.apk`.
+
+## Installation
+Grab the latest APK from the [Releases](https://github.com/ASTROYAL/Workout-Tracker/releases) page and install it on your Android device.

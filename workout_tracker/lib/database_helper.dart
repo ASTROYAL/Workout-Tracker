@@ -87,6 +87,20 @@ CREATE TABLE food_logs (
 )
 ''');
 
+    await db.execute('''
+CREATE TABLE user_settings (
+  key $idType,
+  value TEXT NOT NULL
+)
+''');
+
+    await db.execute('''
+CREATE TABLE weight_logs (
+  date $idType,
+  weightKg $numType
+)
+''');
+
     // Seed initial routines
     for (var routine in seedRoutines.values) {
       await db.insert('routines', {
@@ -213,6 +227,36 @@ CREATE TABLE food_logs (
   Future<void> deleteFoodLog(String id) async {
     final db = await instance.database;
     await db.delete('food_logs', where: 'id = ?', whereArgs: [id]);
+  }
+
+  // --- Weight Logs ---
+  Future<void> saveWeightLog(String date, double weightKg) async {
+    final db = await instance.database;
+    await db.insert('weight_logs', {'date': date, 'weightKg': weightKg}, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<List<Map<String, dynamic>>> getWeightLogs() async {
+    final db = await instance.database;
+    return await db.query('weight_logs', orderBy: 'date ASC');
+  }
+
+  // --- User Settings ---
+  Future<String?> getUserSetting(String key) async {
+    final db = await instance.database;
+    final maps = await db.query('user_settings', where: 'key = ?', whereArgs: [key]);
+    if (maps.isNotEmpty) {
+      return maps.first['value'] as String;
+    }
+    return null;
+  }
+
+  Future<void> saveUserSetting(String key, String value) async {
+    final db = await instance.database;
+    await db.insert(
+      'user_settings',
+      {'key': key, 'value': value},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future close() async {
