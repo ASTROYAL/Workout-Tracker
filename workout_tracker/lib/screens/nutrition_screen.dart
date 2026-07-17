@@ -55,6 +55,7 @@ class NutritionScreen extends StatelessWidget {
               Text('Today\'s Log', style: Theme.of(context).textTheme.titleMedium),
               IconButton(
                 icon: const Icon(Icons.add_circle, color: AppTheme.accent),
+                tooltip: 'Add Food',
                 onPressed: () => _showAddFoodDialog(context, provider),
               )
             ],
@@ -66,6 +67,7 @@ class NutritionScreen extends StatelessWidget {
               subtitle: Text('${log.calories} kcal · ${log.protein}g P · ${log.carbs}g C · ${log.fats}g F'),
               trailing: IconButton(
                 icon: const Icon(Icons.delete_outline, color: AppTheme.muted),
+                tooltip: 'Delete Food Log',
                 onPressed: () => provider.deleteFoodLog(log),
               ),
             ),
@@ -91,6 +93,7 @@ class NutritionScreen extends StatelessWidget {
               Text('Bodyweight', style: Theme.of(context).textTheme.titleMedium),
               IconButton(
                 icon: const Icon(Icons.add_circle_outline, color: AppTheme.accent2),
+                tooltip: 'Log Bodyweight',
                 onPressed: () {
                   _showWeightDialog(context, provider);
                 },

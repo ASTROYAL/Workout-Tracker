@@ -205,6 +205,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                         if (exercise.setup.isNotEmpty || exercise.execution.isNotEmpty || exercise.mistakes.isNotEmpty)
                           IconButton(
                             icon: const Icon(Icons.info_outline, color: AppTheme.accent2),
+                            tooltip: 'View Form Guide',
                             onPressed: () => _showFormGuide(exercise),
                           ),
                       ],
@@ -243,6 +244,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                               set.isCompleted ? Icons.check_circle : Icons.check_circle_outline,
                               color: set.isCompleted ? AppTheme.accent3 : AppTheme.border,
                             ),
+                            tooltip: 'Mark Set Completed',
                             onPressed: () {
                               setState(() {
                                 set.isCompleted = !set.isCompleted;
