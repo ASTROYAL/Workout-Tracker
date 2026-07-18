@@ -97,6 +97,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
 .set-input:focus{border-color:var(--accent);}
 .set-done{width:34px;height:34px;border-radius:8px;background:var(--border);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
 .set-done.checked{background:var(--green);}
+.set-done.checked svg{stroke:#000;}
+.set-done:not(.checked) svg{stroke:var(--muted);}
 .set-header{display:grid;grid-template-columns:28px 1fr 1fr 40px;gap:6px;padding:7px 12px;background:#0d0d0d;border-bottom:1px solid var(--border);}
 .set-header span{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;text-align:center;}
 
@@ -211,10 +213,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
   <div class="topbar">
     <h1>PPL <span>+ Cut</span></h1>
     <div style="display:flex;gap:6px">
-      <div class="icon-btn" onclick="navigate('nutrition')">
+      <div class="icon-btn" data-action="navigate" data-to="nutrition">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
       </div>
-      <div class="icon-btn" onclick="navigate('share')">
+      <div class="icon-btn" data-action="navigate" data-to="share">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       </div>
     </div>
@@ -224,19 +226,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
     <div id="session-view"></div>
   </div>
   <div class="nav">
-    <button class="nav-btn active" onclick="navigate('home')">
+    <button class="nav-btn active" data-action="navigate" data-to="home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
       Home
     </button>
-    <button class="nav-btn" onclick="navigate('nutrition')">
+    <button class="nav-btn" data-action="navigate" data-to="nutrition">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
       Nutrition
     </button>
-    <button class="nav-btn" onclick="navigate('history')">
+    <button class="nav-btn" data-action="navigate" data-to="history">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
       History
     </button>
-    <button class="nav-btn" onclick="navigate('audit')">
+    <button class="nav-btn" data-action="navigate" data-to="audit">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       Audit
     </button>
@@ -247,7 +249,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
 <div class="screen hidden" id="screen-workout">
   <div class="workout-header">
     <div style="display:flex;align-items:center;gap:10px">
-      <div class="icon-btn" onclick="exitWorkout()">
+      <div class="icon-btn" data-action="exit-workout">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15,18 9,12 15,6"/></svg>
       </div>
       <div>
@@ -264,7 +266,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
 <div class="screen hidden" id="screen-hiit">
   <div class="workout-header">
     <div style="display:flex;align-items:center;gap:10px">
-      <div class="icon-btn" onclick="stopHIIT()">
+      <div class="icon-btn" data-action="stop-hiit">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15,18 9,12 15,6"/></svg>
       </div>
       <div>
@@ -289,8 +291,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
       <div class="phase-next" id="hiit-next">Starting soon...</div>
     </div>
     <div class="hiit-controls">
-      <button class="hiit-ctrl-btn" style="background:var(--card);color:var(--text);border:1px solid var(--border)" onclick="toggleHIITPause()" id="hiit-pause-btn">⏸ Pause</button>
-      <button class="hiit-ctrl-btn" style="background:var(--red);color:#fff" onclick="stopHIIT()">✕ Stop</button>
+      <button class="hiit-ctrl-btn" style="background:var(--card);color:var(--text);border:1px solid var(--border)" data-action="toggle-hiit-pause" id="hiit-pause-btn">⏸ Pause</button>
+      <button class="hiit-ctrl-btn" style="background:var(--red);color:#fff" data-action="stop-hiit">✕ Stop</button>
     </div>
     <div id="hiit-protocol-list" style="padding:0 10px 10px"></div>
   </div>
@@ -300,7 +302,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
 <div class="screen hidden" id="screen-nutrition">
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px">
-      <div class="icon-btn" onclick="navigate('home')">
+      <div class="icon-btn" data-action="navigate" data-to="home">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15,18 9,12 15,6"/></svg>
       </div>
       <h1>Nutrition <span>Tracker</span></h1>
@@ -313,16 +315,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
 <div class="screen hidden" id="screen-history">
   <div class="topbar"><h1>Workout <span>History</span></h1></div>
   <div class="tabs">
-    <button class="tab-btn active" onclick="setHistoryTab('all',this)">All</button>
-    <button class="tab-btn" onclick="setHistoryTab('strength',this)">Strength</button>
-    <button class="tab-btn" onclick="setHistoryTab('hiit',this)">HIIT</button>
+    <button class="tab-btn active" data-action="set-history-tab" data-tab="all">All</button>
+    <button class="tab-btn" data-action="set-history-tab" data-tab="strength">Strength</button>
+    <button class="tab-btn" data-action="set-history-tab" data-tab="hiit">HIIT</button>
   </div>
   <div class="scroll" id="history-list" style="margin-top:8px"></div>
   <div class="nav">
-    <button class="nav-btn" onclick="navigate('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Home</button>
-    <button class="nav-btn" onclick="navigate('nutrition')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Nutrition</button>
-    <button class="nav-btn active" onclick="navigate('history')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>History</button>
-    <button class="nav-btn" onclick="navigate('audit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Audit</button>
+    <button class="nav-btn" data-action="navigate" data-to="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Home</button>
+    <button class="nav-btn" data-action="navigate" data-to="nutrition"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Nutrition</button>
+    <button class="nav-btn active" data-action="navigate" data-to="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>History</button>
+    <button class="nav-btn" data-action="navigate" data-to="audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Audit</button>
   </div>
 </div>
 
@@ -331,10 +333,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
   <div class="topbar"><h1>Audit <span>&amp; PRs</span></h1></div>
   <div class="scroll" id="audit-content"></div>
   <div class="nav">
-    <button class="nav-btn" onclick="navigate('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Home</button>
-    <button class="nav-btn" onclick="navigate('nutrition')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Nutrition</button>
-    <button class="nav-btn" onclick="navigate('history')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>History</button>
-    <button class="nav-btn active" onclick="navigate('audit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Audit</button>
+    <button class="nav-btn" data-action="navigate" data-to="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Home</button>
+    <button class="nav-btn" data-action="navigate" data-to="nutrition"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Nutrition</button>
+    <button class="nav-btn" data-action="navigate" data-to="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>History</button>
+    <button class="nav-btn active" data-action="navigate" data-to="audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Audit</button>
   </div>
 </div>
 
@@ -342,22 +344,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
 <div class="screen hidden" id="screen-share">
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px">
-      <div class="icon-btn" onclick="navigate('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15,18 9,12 15,6"/></svg></div>
+      <div class="icon-btn" data-action="navigate" data-to="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15,18 9,12 15,6"/></svg></div>
       <h1>Export <span>&amp; Share</span></h1>
     </div>
   </div>
   <div class="scroll">
     <div class="share-area">
       <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Full workout history, nutrition logs, PRs — packaged for sharing or backup.</p>
-      <button class="share-btn primary" onclick="shareData()">
+      <button class="share-btn primary" data-action="share-data">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         Share via WhatsApp / Gmail
       </button>
-      <button class="share-btn secondary" onclick="copyData()">
+      <button class="share-btn secondary" data-action="copy-data">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         Copy to Clipboard
       </button>
-      <button class="share-btn secondary" onclick="downloadData()">
+      <button class="share-btn secondary" data-action="download-data">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download as JSON
       </button>
@@ -374,7 +376,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
     <div class="rest-secs" id="rest-secs">90</div>
     <div class="rest-label">seconds</div>
   </div>
-  <button class="rest-skip" onclick="skipRest()">Skip Rest</button>
+  <button class="rest-skip" data-action="skip-rest">Skip Rest</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -384,66 +386,357 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Epilog
 // DATA LAYER
 // ═══════════════════════════════════════════
 const KEY = 'ppl_v2';
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||{workouts:[],prs:{},nutrition:{}}}catch{return{workouts:[],prs:{},nutrition:{}}}}
-function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
+let appData = null;
+function load(){
+  if (appData) return appData;
+  try {
+    appData = JSON.parse(localStorage.getItem(KEY)) || {workouts:[],prs:{},nutrition:{}};
+  } catch {
+    appData = {workouts:[],prs:{},nutrition:{}};
+  }
+  return appData;
+}
+let saveTimeout = null;
+function save(d){
+  appData = d;
+  if(saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    localStorage.setItem(KEY,JSON.stringify(appData));
+  }, 500);
+}
 
 // ═══════════════════════════════════════════
 // PROGRAM DATA
 // ═══════════════════════════════════════════
 const PROGRAM = {
-  'push-a':{name:'Push A',type:'push',day:'Monday',subtitle:'Chest · Shoulders · Triceps · Strength',
-    exercises:[
-      {name:'Barbell Bench Press',sets:5,reps:'3–5',rest:210,tip:'Touch chest, controlled descent, elbows 45–75°.',badge:'Compound'},
-      {name:'Overhead Press (Barbell)',sets:4,reps:'4–6',rest:180,tip:'Core braced, slight lean back at lockout, bar path straight up.',badge:'Compound'},
-      {name:'Incline DB Press',sets:3,reps:'8–10',rest:120,tip:'30–45°, full stretch at bottom, squeeze at top.',badge:'Compound'},
-      {name:'Cable Lateral Raise',sets:4,reps:'12–15',rest:90,tip:'Cross-body cable — constant tension unlike dumbbells.',badge:'Isolation'},
-      {name:'Tricep Pushdown (Rope)',sets:3,reps:'10–12',rest:90,tip:'Flare rope at bottom, full extension, hard squeeze.',badge:'Isolation'},
-      {name:'Overhead Tricep Extension (EZ-bar)',sets:3,reps:'10–12',rest:90,tip:'Elbows tucked, full stretch overhead, full ROM.',badge:'Isolation'},
-    ]},
-  'pull-a':{name:'Pull A',type:'pull',day:'Tuesday',subtitle:'Back · Biceps · Strength',
-    exercises:[
-      {name:'Weighted Pull-Up',sets:4,reps:'4–6',rest:210,tip:'Full dead hang, chin clears bar. Add weight via belt progressively.',badge:'Compound'},
-      {name:'Seated Cable Row',sets:4,reps:'6–8',rest:150,tip:"Don't rock — isolate the squeeze. Elbows back, chest up. This is your primary row.",badge:'Compound'},
-      {name:'Lat Pulldown (Wide Grip)',sets:3,reps:'8–10',rest:120,tip:'Slight lean back, pull to upper chest, full stretch at top.',badge:'Compound'},
-      {name:'Bicep Curl Machine',sets:4,reps:'8–10',rest:90,tip:"Full ROM, slow 3s negative. Keep upper arms fixed on the pad — don't let elbows lift.",badge:'Isolation'},
-      {name:'Hammer Curl (DB)',sets:3,reps:'10–12',rest:90,tip:'Neutral grip, no swinging — targets brachialis (underneath bicep).',badge:'Isolation'},
-      {name:'Face Pull (Cable)',sets:3,reps:'15–20',rest:60,tip:'Rope to forehead, external rotation. Light weight only.',badge:'Accessory'},
-    ]},
-  'legs-a':{name:'Legs A',type:'legs',day:'Wednesday',subtitle:'Quads · Glutes · Calves · Squat Focus',
-    exercises:[
-      {name:'Barbell Back Squat',sets:5,reps:'3–5',rest:210,tip:'Break parallel, brace core, knees track toes.',badge:'Compound'},
-      {name:'Romanian Deadlift',sets:3,reps:'8–10',rest:150,tip:'Hinge — feel hamstrings load. No rounding. Bar drags down thighs.',badge:'Compound'},
-      {name:'Leg Press',sets:3,reps:'10–12',rest:120,tip:"High, wide foot — glute emphasis. Full depth, don't lock out knees.",badge:'Compound'},
-      {name:'Leg Extension',sets:3,reps:'12–15',rest:90,tip:'3s negative, squeeze at top for 1 second.',badge:'Isolation'},
-      {name:'Standing Calf Raise',sets:4,reps:'15–20',rest:60,tip:'Full stretch at bottom, explosive up, 1s pause at top. See calf note below.',badge:'Isolation'},
-      {name:'Ab Wheel / Plank',sets:3,reps:'failure',rest:60,tip:'3 sets to failure or 45s plank. Keep lower back flat.',badge:'Core'},
-    ]},
-  'push-b':{name:'Push B',type:'push',day:'Thursday',subtitle:'Chest · Shoulders · Triceps · Volume',
-    exercises:[
-      {name:'Incline Barbell Press',sets:4,reps:'4–6',rest:180,tip:'30° only — steep incline shifts load to shoulders not upper chest.',badge:'Compound'},
-      {name:'DB Shoulder Press',sets:4,reps:'6–8',rest:120,tip:'Greater ROM than barbell. Fixes shoulder imbalances.',badge:'Compound'},
-      {name:'Pec Deck / Pec Fly Machine',sets:3,reps:'10–12',rest:90,tip:"Feel the stretch at the widest point. Squeeze hard at the middle. Don't slam the weight.",badge:'Isolation'},
-      {name:'Seated Lateral Raise (DB)',sets:4,reps:'12–15',rest:60,tip:'Lean forward slightly. Lead with elbows, slow 3s negative.',badge:'Isolation'},
-      {name:'Weighted Dips',sets:3,reps:'8–10',rest:120,tip:'Slight forward lean for chest emphasis. Bodyweight first, then add load.',badge:'Compound'},
-      {name:'Single-Arm Cable Pushdown',sets:3,reps:'12 each',rest:60,tip:'Full extension, wrist neutral, feel the lateral head fire.',badge:'Isolation'},
-    ]},
-  'pull-b':{name:'Pull B',type:'pull',day:'Friday',subtitle:'Back · Biceps · Deadlift + Volume',
-    exercises:[
-      {name:'Conventional Deadlift',sets:4,reps:'3–5',rest:210,tip:'Bar over mid-foot, chest up, lat engagement before pull. See form guide.',badge:'Compound'},
-      {name:'Chest-Supported DB Row',sets:4,reps:'8–10',rest:120,tip:'Lie chest on 45° bench — eliminates all body English. Pure back work.',badge:'Compound'},
-      {name:'Wide-Grip Lat Pulldown',sets:3,reps:'10–12',rest:90,tip:'Slight lean back, pull to upper chest, full stretch at top.',badge:'Compound'},
-      {name:'Bicep Curl Machine',sets:4,reps:'10–12',rest:90,tip:'Full ROM, 3s negative. Upper arms fixed on pad at all times.',badge:'Isolation'},
-      {name:'Incline DB Curl',sets:3,reps:'10–12',rest:90,tip:'Lie on 45° bench — maximum bicep stretch at bottom.',badge:'Isolation'},
-      {name:'Rear Delt Fly (Machine)',sets:3,reps:'15',rest:60,tip:'Elbows slightly bent, lead wide. Prevents internal rotation.',badge:'Isolation'},
-    ]},
-  'legs-b':{name:'Legs B',type:'legs',day:'Saturday',subtitle:'Glutes · Hamstrings · Posterior Chain',
-    exercises:[
-      {name:'Sumo Deadlift',sets:4,reps:'5–6',rest:180,tip:'Wide stance, toes out ~45°, grip inside legs. Torso more upright than conventional. Drives through heels and squeeze glutes hard at lockout.',badge:'Compound'},
-      {name:'Bulgarian Split Squat (DB)',sets:4,reps:'8 each',rest:120,tip:'Rear foot elevated, lean forward slightly for glute emphasis. Start bodyweight-only for 2 weeks.',badge:'Compound'},
-      {name:'Seated Leg Curl',sets:4,reps:'10–12',rest:90,tip:'Hip flexed = greater hamstring stretch. Slow 3s negative every rep.',badge:'Isolation'},
-      {name:'Stiff-Leg Deadlift (DB)',sets:3,reps:'10–12',rest:120,tip:'More stretch than RDL, slight knee bend. Feel every inch of hamstring.',badge:'Compound'},
-      {name:'Seated Calf Raise',sets:4,reps:'15–20',rest:60,tip:'Full ROM, 3s down, 1s pause at stretch. Add weight week 3 onwards.',badge:'Isolation'},
-    ]},
+  "push-a": {
+    "name": "Push A",
+    "type": "push",
+    "day": "Monday",
+    "subtitle": "Chest · Shoulders · Triceps · Strength",
+    "exercises": [
+      {
+        "name": "Barbell Bench Press",
+        "sets": 5,
+        "reps": "3–5",
+        "rest": 210,
+        "tip": "Touch chest, controlled descent, elbows 45–75°.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Overhead Press (Barbell)",
+        "sets": 4,
+        "reps": "4–6",
+        "rest": 180,
+        "tip": "Core braced, slight lean back at lockout, bar path straight up.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Incline DB Press",
+        "sets": 3,
+        "reps": "8–10",
+        "rest": 120,
+        "tip": "30–45°, full stretch at bottom, squeeze at top.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Cable Lateral Raise",
+        "sets": 4,
+        "reps": "12–15",
+        "rest": 90,
+        "tip": "Cross-body cable — constant tension unlike dumbbells.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Tricep Pushdown (Rope)",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": 90,
+        "tip": "Flare rope at bottom, full extension, hard squeeze.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Overhead Tricep Extension (EZ-bar)",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": 90,
+        "tip": "Elbows tucked, full stretch overhead, full ROM.",
+        "badge": "Isolation"
+      }
+    ]
+  },
+  "pull-a": {
+    "name": "Pull A",
+    "type": "pull",
+    "day": "Tuesday",
+    "subtitle": "Back · Biceps · Strength",
+    "exercises": [
+      {
+        "name": "Weighted Pull-Up",
+        "sets": 4,
+        "reps": "4–6",
+        "rest": 210,
+        "tip": "Full dead hang, chin clears bar. Add weight via belt progressively.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Seated Cable Row",
+        "sets": 4,
+        "reps": "6–8",
+        "rest": 150,
+        "tip": "Don't rock — isolate the squeeze. Elbows back, chest up. This is your primary row.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Lat Pulldown (Wide Grip)",
+        "sets": 3,
+        "reps": "8–10",
+        "rest": 120,
+        "tip": "Slight lean back, pull to upper chest, full stretch at top.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Bicep Curl Machine",
+        "sets": 4,
+        "reps": "8–10",
+        "rest": 90,
+        "tip": "Full ROM, slow 3s negative. Keep upper arms fixed on the pad — don't let elbows lift.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Hammer Curl (DB)",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": 90,
+        "tip": "Neutral grip, no swinging — targets brachialis (underneath bicep).",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Face Pull (Cable)",
+        "sets": 3,
+        "reps": "15–20",
+        "rest": 60,
+        "tip": "Rope to forehead, external rotation. Light weight only.",
+        "badge": "Accessory"
+      }
+    ]
+  },
+  "legs-a": {
+    "name": "Legs A",
+    "type": "legs",
+    "day": "Wednesday",
+    "subtitle": "Quads · Glutes · Calves · Squat Focus",
+    "exercises": [
+      {
+        "name": "Barbell Back Squat",
+        "sets": 5,
+        "reps": "3–5",
+        "rest": 210,
+        "tip": "Break parallel, brace core, knees track toes.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Romanian Deadlift",
+        "sets": 3,
+        "reps": "8–10",
+        "rest": 150,
+        "tip": "Hinge — feel hamstrings load. No rounding. Bar drags down thighs.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Leg Press",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": 120,
+        "tip": "High, wide foot — glute emphasis. Full depth, don't lock out knees.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Leg Extension",
+        "sets": 3,
+        "reps": "12–15",
+        "rest": 90,
+        "tip": "3s negative, squeeze at top for 1 second.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Standing Calf Raise",
+        "sets": 4,
+        "reps": "15–20",
+        "rest": 60,
+        "tip": "Full stretch at bottom, explosive up, 1s pause at top. See calf note below.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Ab Wheel / Plank",
+        "sets": 3,
+        "reps": "failure",
+        "rest": 60,
+        "tip": "3 sets to failure or 45s plank. Keep lower back flat.",
+        "badge": "Core"
+      }
+    ]
+  },
+  "push-b": {
+    "name": "Push B",
+    "type": "push",
+    "day": "Thursday",
+    "subtitle": "Chest · Shoulders · Triceps · Volume",
+    "exercises": [
+      {
+        "name": "Incline Barbell Press",
+        "sets": 4,
+        "reps": "4–6",
+        "rest": 180,
+        "tip": "30° only — steep incline shifts load to shoulders not upper chest.",
+        "badge": "Compound"
+      },
+      {
+        "name": "DB Shoulder Press",
+        "sets": 4,
+        "reps": "6–8",
+        "rest": 120,
+        "tip": "Greater ROM than barbell. Fixes shoulder imbalances.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Pec Deck / Pec Fly Machine",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": 90,
+        "tip": "Feel the stretch at the widest point. Squeeze hard at the middle. Don't slam the weight.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Seated Lateral Raise (DB)",
+        "sets": 4,
+        "reps": "12–15",
+        "rest": 60,
+        "tip": "Lean forward slightly. Lead with elbows, slow 3s negative.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Weighted Dips",
+        "sets": 3,
+        "reps": "8–10",
+        "rest": 120,
+        "tip": "Slight forward lean for chest emphasis. Bodyweight first, then add load.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Single-Arm Cable Pushdown",
+        "sets": 3,
+        "reps": "12 each",
+        "rest": 60,
+        "tip": "Full extension, wrist neutral, feel the lateral head fire.",
+        "badge": "Isolation"
+      }
+    ]
+  },
+  "pull-b": {
+    "name": "Pull B",
+    "type": "pull",
+    "day": "Friday",
+    "subtitle": "Back · Biceps · Deadlift + Volume",
+    "exercises": [
+      {
+        "name": "Conventional Deadlift",
+        "sets": 4,
+        "reps": "3–5",
+        "rest": 210,
+        "tip": "Bar over mid-foot, chest up, lat engagement before pull. See form guide.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Chest-Supported DB Row",
+        "sets": 4,
+        "reps": "8–10",
+        "rest": 120,
+        "tip": "Lie chest on 45° bench — eliminates all body English. Pure back work.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Wide-Grip Lat Pulldown",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": 90,
+        "tip": "Slight lean back, pull to upper chest, full stretch at top.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Bicep Curl Machine",
+        "sets": 4,
+        "reps": "10–12",
+        "rest": 90,
+        "tip": "Full ROM, 3s negative. Upper arms fixed on pad at all times.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Incline DB Curl",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": 90,
+        "tip": "Lie on 45° bench — maximum bicep stretch at bottom.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Rear Delt Fly (Machine)",
+        "sets": 3,
+        "reps": "15",
+        "rest": 60,
+        "tip": "Elbows slightly bent, lead wide. Prevents internal rotation.",
+        "badge": "Isolation"
+      }
+    ]
+  },
+  "legs-b": {
+    "name": "Legs B",
+    "type": "legs",
+    "day": "Saturday",
+    "subtitle": "Glutes · Hamstrings · Posterior Chain",
+    "exercises": [
+      {
+        "name": "Sumo Deadlift",
+        "sets": 4,
+        "reps": "5–6",
+        "rest": 180,
+        "tip": "Wide stance, toes out ~45°, grip inside legs. Torso more upright than conventional. Drives through heels and squeeze glutes hard at lockout.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Bulgarian Split Squat (DB)",
+        "sets": 4,
+        "reps": "8 each",
+        "rest": 120,
+        "tip": "Rear foot elevated, lean forward slightly for glute emphasis. Start bodyweight-only for 2 weeks.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Seated Leg Curl",
+        "sets": 4,
+        "reps": "10–12",
+        "rest": 90,
+        "tip": "Hip flexed = greater hamstring stretch. Slow 3s negative every rep.",
+        "badge": "Isolation"
+      },
+      {
+        "name": "Stiff-Leg Deadlift (DB)",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": 120,
+        "tip": "More stretch than RDL, slight knee bend. Feel every inch of hamstring.",
+        "badge": "Compound"
+      },
+      {
+        "name": "Seated Calf Raise",
+        "sets": 4,
+        "reps": "15–20",
+        "rest": 60,
+        "tip": "Full ROM, 3s down, 1s pause at stretch. Add weight week 3 onwards.",
+        "badge": "Isolation"
+      }
+    ]
+  }
 };
 
 // ═══════════════════════════════════════════
@@ -485,7 +778,17 @@ let historyTab = 'all';
 // ═══════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════
+function clearAllIntervals() {
+  if(workoutTimer){clearInterval(workoutTimer);workoutTimer=null;}
+  if(hiitInterval){clearInterval(hiitInterval);hiitInterval=null;}
+  if(hiitElapsedInterval){clearInterval(hiitElapsedInterval);hiitElapsedInterval=null;}
+  if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;document.getElementById('rest-overlay').classList.add('hidden');}
+}
+
 function navigate(to){
+  if(to !== 'workout' && to !== 'hiit') {
+    clearAllIntervals();
+  }
   ['home','workout','hiit','nutrition','history','audit','share'].forEach(s=>{
     const el=document.getElementById('screen-'+s);
     if(el) el.classList.toggle('hidden', s!==to);
@@ -507,7 +810,7 @@ function renderHome(){
     const type=prog?prog.type:'rest';
     const labels={push:'Push',pull:'Pull',legs:'Legs'};
     const label=prog?(labels[prog.type]||'?'):'Rest';
-    return `<div class="day-chip ${type} ${w.key===currentDay?'active':''}" onclick="selectDay('${w.key}')">
+    return `<div class="day-chip ${type} ${w.key===currentDay?'active':''}" data-action="select-day" data-key="${w.key}">
       <div class="chip-day">${w.day}</div><div class="chip-type">${label}</div>
     </div>`;
   }).join('');
@@ -542,7 +845,7 @@ function renderSessionView(){
           <div class="ex-sets">${ex.sets}×${ex.reps}</div>
         </div>`).join('')}
     </div>
-    <button class="start-btn" onclick="startWorkout('${currentDay}')">
+    <button class="start-btn" data-action="start-workout" data-key="${currentDay}">
       <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><polygon points="5,3 19,12 5,21"/></svg>
       Start ${prog.name}
     </button>
@@ -562,7 +865,7 @@ function renderHIITCards(){
           <div class="ex-meta">${h.exercises.length} exercises · ~${h.totalMins} min · Burns ~${h.totalMins*9}–${h.totalMins*12} kcal</div>
         </div>
       </div>
-      <button class="start-btn hiit-start" style="margin:8px 10px 10px;padding:12px" onclick="startHIIT('${key}')">
+      <button class="start-btn hiit-start" style="margin:8px 10px 10px;padding:12px" data-action="start-hiit" data-key="${key}">
         <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><polygon points="5,3 19,12 5,21"/></svg>
         Start ${h.name.split('—')[0].trim()}
       </button>
@@ -592,30 +895,51 @@ function renderWorkoutScreen(){
   const prog=PROGRAM[activeWorkout.key];
   document.getElementById('wk-title').textContent=prog.name;
   document.getElementById('wk-subtitle').textContent=prog.subtitle;
-  document.getElementById('workout-scroll').innerHTML=
-    prog.exercises.map((ex,i)=>`
-      <div class="ex-block">
-        <div class="ex-block-head">
-          <div class="ex-num-badge">${i+1}</div>
-          <div class="ex-block-name">${ex.name}</div>
-          <span style="font-size:9px;background:var(--border);padding:2px 7px;border-radius:10px;color:var(--muted)">${ex.badge}</span>
-        </div>
-        <div class="ex-block-tip">${ex.tip}</div>
-        <div class="set-header"><span>Set</span><span>Weight (kg)</span><span>Reps</span><span>✓</span></div>
-        ${activeWorkout.sets[i].map((s,j)=>`
-          <div class="set-row">
-            <div class="set-label">${j+1}</div>
-            <input class="set-input" type="number" inputmode="decimal" placeholder="kg" value="${s.weight}" onchange="updateSet(${i},${j},'weight',this.value)"/>
-            <input class="set-input" type="number" inputmode="numeric" placeholder="${ex.reps}" value="${s.reps}" onchange="updateSet(${i},${j},'reps',this.value)"/>
-            <button class="set-done ${s.done?'checked':''}" onclick="toggleSet(${i},${j},${ex.rest})" id="done-${i}-${j}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="${s.done?'#000':'var(--muted)'}" stroke-width="3" width="15" height="15"><polyline points="20,6 9,17 4,12"/></svg>
-            </button>
-          </div>`).join('')}
-      </div>`).join('')+
-    `<button class="finish-btn" onclick="finishWorkout()">
+  const scrollEl = document.getElementById('workout-scroll');
+  scrollEl.innerHTML = '';
+  const frag = document.createDocumentFragment();
+
+  prog.exercises.forEach((ex, i) => {
+    const block = document.createElement('div');
+    block.className = 'ex-block';
+
+    let bhtml = `
+      <div class="ex-block-head">
+        <div class="ex-num-badge">${i+1}</div>
+        <div class="ex-block-name">${ex.name}</div>
+        <span style="font-size:9px;background:var(--border);padding:2px 7px;border-radius:10px;color:var(--muted)">${ex.badge}</span>
+      </div>
+      <div class="ex-block-tip">${ex.tip}</div>
+      <div class="set-header"><span>Set</span><span>Weight (kg)</span><span>Reps</span><span>✓</span></div>
+    `;
+
+    activeWorkout.sets[i].forEach((s, j) => {
+      bhtml += `
+        <div class="set-row">
+          <div class="set-label">${j+1}</div>
+          <input class="set-input" type="number" inputmode="decimal" placeholder="kg" value="${s.weight}" data-action="update-set" data-i="${i}" data-j="${j}" data-field="weight"/>
+          <input class="set-input" type="number" inputmode="numeric" placeholder="${ex.reps}" value="${s.reps}" data-action="update-set" data-i="${i}" data-j="${j}" data-field="reps"/>
+          <button class="set-done ${s.done?'checked':''}" aria-checked="${s.done?'true':'false'}" data-action="toggle-set" data-i="${i}" data-j="${j}" data-rest="${ex.rest}" id="done-${i}-${j}">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="3" width="15" height="15"><polyline points="20,6 9,17 4,12"/></svg>
+          </button>
+        </div>`;
+    });
+
+    block.innerHTML = bhtml;
+    frag.appendChild(block);
+  });
+
+  const btnHtml = `
+    <button class="finish-btn" data-action="finish-workout">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><polyline points="20,6 9,17 4,12"/></svg>
       Finish Workout
-    </button><div style="height:20px"></div>`;
+    </button><div style="height:20px"></div>
+  `;
+  const btnWrapper = document.createElement('div');
+  btnWrapper.innerHTML = btnHtml;
+  while(btnWrapper.firstChild) frag.appendChild(btnWrapper.firstChild);
+
+  scrollEl.appendChild(frag);
 }
 
 function updateSet(ei,si,f,v){if(activeWorkout) activeWorkout.sets[ei][si][f]=v;}
@@ -625,8 +949,8 @@ function toggleSet(ei,si,rest){
   const s=activeWorkout.sets[ei][si];
   s.done=!s.done;
   const btn=document.getElementById(`done-${ei}-${si}`);
-  btn.className=`set-done ${s.done?'checked':''}`;
-  btn.querySelector('svg').setAttribute('stroke',s.done?'#000':'var(--muted)');
+  btn.classList.toggle('checked', s.done);
+  btn.setAttribute('aria-checked', s.done ? 'true' : 'false');
   if(s.done){showToast(`Set ✓  Rest ${rest}s`);startRestTimer(rest);}
 }
 
@@ -665,16 +989,22 @@ function exitWorkout(){
 // ═══════════════════════════════════════════
 function startHIIT(protocolKey){
   const p=HIIT_PROTOCOLS[protocolKey];
-  const sequence=[];
-  sequence.push({type:'prep',label:'GET READY',secs:10,exercise:'Prepare yourself',color:'var(--hiit)'});
-  p.exercises.forEach((ex,ei)=>{
-    for(let r=0;r<p.rounds;r++){
-      sequence.push({type:'work',label:'WORK',secs:p.workSecs,exercise:ex,next:`Rest ${p.restSecs}s`,color:'var(--red)'});
-      if(r<p.rounds-1||ei<p.exercises.length-1)
-        sequence.push({type:'rest',label:'REST',secs:p.restSecs,exercise:'Breathe',next:r<p.rounds-1?`Round ${r+2}: ${ex}`:`Next: ${p.exercises[ei+1]||'Done!'}`,color:'var(--green)'});
+  const totalItems = 2 + (p.exercises.length * p.rounds * 2) - 1;
+  const sequence = new Array(totalItems);
+  let seqIdx = 0;
+
+  sequence[seqIdx++] = {type:'prep',label:'GET READY',secs:10,exercise:'Prepare yourself',color:'var(--hiit)'};
+
+  for(let ei=0; ei<p.exercises.length; ei++){
+    const ex = p.exercises[ei];
+    for(let r=0; r<p.rounds; r++){
+      sequence[seqIdx++] = {type:'work',label:'WORK',secs:p.workSecs,exercise:ex,next:`Rest ${p.restSecs}s`,color:'var(--red)'};
+      if(r<p.rounds-1 || ei<p.exercises.length-1) {
+        sequence[seqIdx++] = {type:'rest',label:'REST',secs:p.restSecs,exercise:'Breathe',next:r<p.rounds-1?`Round ${r+2}: ${ex}`:`Next: ${p.exercises[ei+1]||'Done!'}`,color:'var(--green)'};
+      }
     }
-  });
-  sequence.push({type:'done',label:'DONE',secs:0,exercise:'Great work! 🔥',color:'var(--accent)'});
+  }
+  sequence[seqIdx++] = {type:'done',label:'DONE',secs:0,exercise:'Great work! 🔥',color:'var(--accent)'};
 
   hiitState={protocolKey,protocol:p,sequence,current:0,paused:false,startTime:Date.now(),totalSecs:0};
   document.getElementById('hiit-title').textContent=p.name.split('—')[0].trim();
@@ -689,6 +1019,7 @@ function startHIIT(protocolKey){
   navigate('hiit');
   runHIITStep();
 
+  if(hiitElapsedInterval){clearInterval(hiitElapsedInterval);hiitElapsedInterval=null;}
   hiitElapsedInterval=setInterval(()=>{
     if(!hiitState||hiitState.paused) return;
     hiitState.totalSecs++;
@@ -777,9 +1108,9 @@ function renderNutrition(){
   const el=document.getElementById('nutrition-content');
   el.innerHTML=`
     <div class="tabs">
-      <button class="tab-btn active" id="nut-today-btn" onclick="setNutTab('today')">Today</button>
-      <button class="tab-btn" id="nut-goals-btn" onclick="setNutTab('goals')">Goals</button>
-      <button class="tab-btn" id="nut-log-btn" onclick="setNutTab('log')">Log</button>
+      <button class="tab-btn active" id="nut-today-btn" data-action="set-nut-tab" data-tab="today">Today</button>
+      <button class="tab-btn" id="nut-goals-btn" data-action="set-nut-tab" data-tab="goals">Goals</button>
+      <button class="tab-btn" id="nut-log-btn" data-action="set-nut-tab" data-tab="log">Log</button>
     </div>
 
     <div id="nut-tab-today">
@@ -911,7 +1242,12 @@ function saveNutrition(){
   if(!data.nutrition[today]) data.nutrition[today]={};
   ['calories','protein','carbs','fat','water','weight'].forEach(k=>{
     const el=document.getElementById('nut-'+k);
-    if(el) data.nutrition[today][k]=parseFloat(el.value)||0;
+    if(el) {
+      let val = parseFloat(el.value) || 0;
+      let clamped = Math.max(0, Math.min(10000, val));
+      el.value = clamped;
+      data.nutrition[today][k] = clamped;
+    }
   });
   save(data);
   showToast('Saved!');
@@ -922,7 +1258,12 @@ function saveGoals(){
   if(!data.nutrition.goals) data.nutrition.goals={};
   ['goal_calories','goal_protein','goal_carbs','goal_fat','goal_water'].forEach(k=>{
     const el=document.getElementById(k);
-    if(el) data.nutrition.goals[k]=parseFloat(el.value)||0;
+    if(el) {
+      let val = parseFloat(el.value) || 0;
+      let clamped = Math.max(0, Math.min(10000, val));
+      el.value = clamped;
+      data.nutrition.goals[k] = clamped;
+    }
   });
   save(data);
   showToast('Goals updated!');
@@ -990,9 +1331,10 @@ function setHistoryTab(tab,el){
 }
 
 function renderHistory(){
-  let {workouts}=load();
-  if(historyTab==='strength') workouts=workouts.filter(w=>w.sessionType==='strength');
-  if(historyTab==='hiit') workouts=workouts.filter(w=>w.sessionType==='hiit');
+  let workouts = load().workouts;
+  if(historyTab !== 'all') {
+    workouts = workouts.filter(w => w.sessionType === historyTab);
+  }
   const el=document.getElementById('history-list');
   if(!workouts.length){
     el.innerHTML=`<div class="history-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="56" height="56"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg><div style="font-size:15px;font-weight:800">No sessions yet</div></div>`;
@@ -1114,7 +1456,7 @@ function renderWeightAudit(data){
 // REST TIMER
 // ═══════════════════════════════════════════
 function startRestTimer(secs){
-  if(restTimerInterval) clearInterval(restTimerInterval);
+  if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
   let r=secs;
   document.getElementById('rest-secs').textContent=r;
   document.getElementById('rest-overlay').classList.remove('hidden');
@@ -1169,6 +1511,36 @@ function showToast(msg){
 // INIT
 renderHome();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+// EVENT DELEGATION
+document.body.addEventListener('change', e => {
+  const el = e.target;
+  if (el.matches('[data-action="update-set"]')) {
+    updateSet(parseInt(el.getAttribute('data-i')), parseInt(el.getAttribute('data-j')), el.getAttribute('data-field'), el.value);
+  }
+});
+
+document.body.addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if(!btn) return;
+  const action = btn.getAttribute('data-action');
+  if(action === 'navigate') navigate(btn.getAttribute('data-to'));
+  if(action === 'select-day') selectDay(btn.getAttribute('data-key'));
+  if(action === 'toggle-set') toggleSet(parseInt(btn.getAttribute('data-i')), parseInt(btn.getAttribute('data-j')), parseInt(btn.getAttribute('data-rest')));
+  if(action === 'finish-workout') finishWorkout();
+  if(action === 'start-workout') startWorkout(btn.getAttribute('data-key'));
+  if(action === 'start-hiit') startHIIT(btn.getAttribute('data-key'));
+  if(action === 'stop-hiit') stopHIIT();
+  if(action === 'toggle-hiit-pause') toggleHIITPause();
+  if(action === 'skip-rest') skipRest();
+  if(action === 'share-data') shareData();
+  if(action === 'copy-data') copyData();
+  if(action === 'download-data') downloadData();
+  if(action === 'set-nut-tab') setNutTab(btn.getAttribute('data-tab'));
+  if(action === 'set-history-tab') setHistoryTab(btn.getAttribute('data-tab'), btn);
+  if(action === 'toggle-history') toggleHistory(parseInt(btn.getAttribute('data-i')), btn);
+  if(action === 'exit-workout') exitWorkout();
+});
 </script>
 </body>
 </html>
