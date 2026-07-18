@@ -133,10 +133,12 @@ class _RoutineEditScreenState extends State<RoutineEditScreen> {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit, color: AppTheme.accent2),
+                            tooltip: 'Edit Exercise',
                             onPressed: () => _editExercise(index),
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: AppTheme.push),
+                            tooltip: 'Delete Exercise',
                             onPressed: () {
                               setState(() {
                                 _exercises.removeAt(index);
