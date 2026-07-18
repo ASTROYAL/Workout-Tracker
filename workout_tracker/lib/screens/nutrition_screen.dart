@@ -108,6 +108,10 @@ class NutritionScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
+          if (provider.weightLogs.isNotEmpty) ...[
+            Text('Current Weight: ${provider.weightLogs.last['weightKg']} kg', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.paper, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+          ],
           provider.weightLogs.length < 2
               ? const Text('Log at least 2 weight entries to see the trend chart.')
               : SizedBox(
@@ -161,6 +165,11 @@ class NutritionScreen extends StatelessWidget {
               final w = double.tryParse(controller.text);
               if (w != null) {
                 provider.addWeightLog(w);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Weight logged!')),
+                  );
+                }
               }
               Navigator.pop(context);
             },

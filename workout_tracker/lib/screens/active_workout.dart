@@ -19,7 +19,7 @@ class ActiveWorkoutScreen extends StatefulWidget {
 class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   late DateTime _startTime;
   final Map<String, List<SetModel>> _exerciseSets = {};
-  bool _includeHIIT = false;
+  late List<RoutineExerciseModel> _activeExercises;
   Timer? _restTimer;
   int _restSecondsRemaining = 0;
 
@@ -27,7 +27,8 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   void initState() {
     super.initState();
     _startTime = DateTime.now();
-    for (var exercise in widget.routine.exercises) {
+    _activeExercises = List.from(widget.routine.exercises);
+    for (var exercise in _activeExercises) {
       _exerciseSets[exercise.name] = List.generate(
         exercise.sets,
         (index) => SetModel(
@@ -65,28 +66,50 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     }
   }
 
+  void _addHIIT() {
+    setState(() {
+      final hiitExercise = RoutineExerciseModel(
+        name: 'HIIT (Post-Workout)',
+        sets: 1,
+        reps: '1',
+        restSeconds: 0,
+        tip: '15 minutes of high intensity interval training.',
+        badge: 'Cardio',
+        setup: [],
+        execution: [],
+        mistakes: [],
+      );
+      if (!_activeExercises.any((e) => e.name == 'HIIT (Post-Workout)')) {
+        _activeExercises.add(hiitExercise);
+        _exerciseSets[hiitExercise.name] = [
+          SetModel(
+            id: const Uuid().v4(),
+            exerciseName: hiitExercise.name,
+            reps: 1,
+            weight: 0.0,
+            isCompleted: false,
+          )
+        ];
+      }
+    });
+  }
+
   void _finishWorkout() {
     int duration = DateTime.now().difference(_startTime).inSeconds;
     double volume = 0;
     List<SetModel> allSets = [];
+    bool includeHIIT = false;
 
     for (var exerciseSets in _exerciseSets.values) {
       for (var set in exerciseSets) {
         if (set.isCompleted) {
+          if (set.exerciseName == 'HIIT (Post-Workout)') {
+            includeHIIT = true;
+          }
           volume += set.weight * set.reps;
           allSets.add(set);
         }
       }
-    }
-
-    if (_includeHIIT) {
-       allSets.add(SetModel(
-         id: const Uuid().v4(),
-         exerciseName: 'HIIT (Post-Workout)',
-         reps: 1,
-         weight: 0,
-         isCompleted: true,
-       ));
     }
 
     final workout = WorkoutModel(
@@ -100,7 +123,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
 
     context.read<WorkoutProvider>().saveWorkout(workout);
 
-    if (_includeHIIT) {
+    if (includeHIIT) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HIITScreen(
@@ -187,7 +210,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          ...widget.routine.exercises.map((exercise) {
+          ..._activeExercises.map((exercise) {
             final sets = _exerciseSets[exercise.name]!;
             return Card(
               margin: const EdgeInsets.only(bottom: 16),
@@ -260,16 +283,18 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               ),
             );
           }),
-          CheckboxListTile(
-            title: const Text('Add 15m HIIT (Post-Workout)'),
-            value: _includeHIIT,
-            activeColor: AppTheme.hiit,
-            onChanged: (val) {
-              setState(() {
-                _includeHIIT = val ?? false;
-              });
-            },
-          ),
+          if (!_activeExercises.any((e) => e.name == 'HIIT (Post-Workout)'))
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: ElevatedButton(
+                onPressed: _addHIIT,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.hiit,
+                  padding: const EdgeInsets.all(16),
+                ),
+                child: const Text('ADD HIIT', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
           const SizedBox(height: 80), // extra padding for bottom sheet
         ],
       ),
