@@ -1,0 +1,1 @@
+## 2026-07-18 - [Added tooltips to IconButtons]\n**Learning:** Found that IconButtons in this Flutter app lacked tooltip attributes, which makes them inaccessible to screen readers and harder for users to understand what icon-only buttons do.\n**Action:** Always ensure `IconButton` widgets include a `tooltip` property for semantic labeling.
