@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme.dart';
+import 'wild_widgets.dart';
 
 class HIITScreen extends StatefulWidget {
   final VoidCallback onFinish;
+
   const HIITScreen({super.key, required this.onFinish});
 
   @override
@@ -16,10 +18,13 @@ class _HIITScreenState extends State<HIITScreen> {
   static const int restSeconds = 20;
 
   int _currentRound = 1;
-  bool _isWorkPhase = true; // true = work, false = rest
+  bool _isWorkPhase = true;
   int _secondsRemaining = workSeconds;
   Timer? _timer;
   bool _isPaused = true;
+
+  bool get _isFinished =>
+      _currentRound == totalRounds && !_isWorkPhase && _secondsRemaining == 0;
 
   @override
   void dispose() {
@@ -30,33 +35,32 @@ class _HIITScreenState extends State<HIITScreen> {
   void _togglePause() {
     setState(() {
       _isPaused = !_isPaused;
-      if (!_isPaused) {
-        _startTimer();
-      } else {
+      if (_isPaused) {
         _timer?.cancel();
+      } else {
+        _startTimer();
       }
     });
   }
 
   void _startTimer() {
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_secondsRemaining > 0) {
           _secondsRemaining--;
+          return;
+        }
+        if (_isWorkPhase) {
+          _isWorkPhase = false;
+          _secondsRemaining = restSeconds;
+        } else if (_currentRound < totalRounds) {
+          _currentRound++;
+          _isWorkPhase = true;
+          _secondsRemaining = workSeconds;
         } else {
-          if (_isWorkPhase) {
-            _isWorkPhase = false;
-            _secondsRemaining = restSeconds;
-          } else {
-            if (_currentRound < totalRounds) {
-              _currentRound++;
-              _isWorkPhase = true;
-              _secondsRemaining = workSeconds;
-            } else {
-              _timer?.cancel();
-              _isPaused = true;
-            }
-          }
+          _timer?.cancel();
+          _isPaused = true;
         }
       });
     });
@@ -64,54 +68,56 @@ class _HIITScreenState extends State<HIITScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isFinished = _currentRound == totalRounds && !_isWorkPhase && _secondsRemaining == 0;
-
     return Scaffold(
-      appBar: AppBar(title: const Text('HIIT Session')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              isFinished ? 'DONE!' : 'Round $_currentRound of $totalRounds',
-              style: Theme.of(context).textTheme.headlineMedium,
+      appBar: AppBar(title: const Text('HIIT Finisher')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: WildCard(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _isFinished ? 'DONE' : 'ROUND $_currentRound OF $totalRounds',
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _isFinished
+                      ? 'Finisher Complete'
+                      : (_isWorkPhase ? 'WORK' : 'REST'),
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: _isWorkPhase ? AppTheme.orangeSoft : AppTheme.violet,
+                  ),
+                ),
+                const SizedBox(height: 28),
+                Text(
+                  _isFinished ? '0' : '$_secondsRemaining',
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    fontSize: 86,
+                    color: AppTheme.snow,
+                  ),
+                ),
+                const SizedBox(height: 28),
+                if (!_isFinished)
+                  ElevatedButton.icon(
+                    onPressed: _togglePause,
+                    icon: Icon(
+                      _isPaused
+                          ? Icons.play_arrow_rounded
+                          : Icons.pause_rounded,
+                    ),
+                    label: Text(_isPaused ? 'Start' : 'Pause'),
+                  ),
+                const SizedBox(height: 12),
+                OutlinedButton(
+                  onPressed: widget.onFinish,
+                  child: Text(_isFinished ? 'Finish HIIT' : 'Skip and Save'),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            if (!isFinished)
-              Text(
-                _isWorkPhase ? 'WORK' : 'REST',
-                style: TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: _isWorkPhase ? AppTheme.push : AppTheme.hiit,
-                ),
-              ),
-            const SizedBox(height: 40),
-            if (!isFinished)
-              Text(
-                '$_secondsRemaining',
-                style: const TextStyle(fontSize: 100, fontWeight: FontWeight.bold),
-              ),
-            const SizedBox(height: 40),
-            if (!isFinished)
-              ElevatedButton.icon(
-                onPressed: _togglePause,
-                icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
-                label: Text(_isPaused ? 'START' : 'PAUSE'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.accent,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                ),
-              ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: widget.onFinish,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.card,
-              ),
-              child: const Text('FINISH HIIT'),
-            )
-          ],
+          ),
         ),
       ),
     );

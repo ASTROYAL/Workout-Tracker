@@ -35,10 +35,9 @@ class _RoutineEditScreenState extends State<RoutineEditScreen> {
     );
 
     context.read<WorkoutProvider>().updateRoutine(updatedRoutine);
+    final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Routine Updated')),
-    );
+    messenger.showSnackBar(const SnackBar(content: Text('Routine Updated')));
   }
 
   void _editExercise(int index) {
@@ -56,15 +55,34 @@ class _RoutineEditScreenState extends State<RoutineEditScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Name')),
-              TextField(controller: setsCtrl, decoration: const InputDecoration(labelText: 'Sets'), keyboardType: TextInputType.number),
-              TextField(controller: repsCtrl, decoration: const InputDecoration(labelText: 'Reps (e.g., 8-10)')),
-              TextField(controller: restCtrl, decoration: const InputDecoration(labelText: 'Rest (seconds)'), keyboardType: TextInputType.number),
+              TextField(
+                controller: nameCtrl,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              TextField(
+                controller: setsCtrl,
+                decoration: const InputDecoration(labelText: 'Sets'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: repsCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Reps (e.g., 8-10)',
+                ),
+              ),
+              TextField(
+                controller: restCtrl,
+                decoration: const InputDecoration(labelText: 'Rest (seconds)'),
+                keyboardType: TextInputType.number,
+              ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () {
               setState(() {
@@ -97,7 +115,13 @@ class _RoutineEditScreenState extends State<RoutineEditScreen> {
         actions: [
           TextButton(
             onPressed: _saveRoutine,
-            child: const Text('SAVE', style: TextStyle(color: AppTheme.accent, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'SAVE',
+              style: TextStyle(
+                color: AppTheme.accent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -127,16 +151,24 @@ class _RoutineEditScreenState extends State<RoutineEditScreen> {
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(
                       title: Text(ex.name),
-                      subtitle: Text('${ex.sets} sets x ${ex.reps} | Rest: ${ex.restSeconds}s'),
+                      subtitle: Text(
+                        '${ex.sets} sets x ${ex.reps} | Rest: ${ex.restSeconds}s',
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.edit, color: AppTheme.accent2),
+                            icon: const Icon(
+                              Icons.edit,
+                              color: AppTheme.accent2,
+                            ),
                             onPressed: () => _editExercise(index),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete, color: AppTheme.push),
+                            icon: const Icon(
+                              Icons.delete,
+                              color: AppTheme.push,
+                            ),
                             onPressed: () {
                               setState(() {
                                 _exercises.removeAt(index);
@@ -157,17 +189,19 @@ class _RoutineEditScreenState extends State<RoutineEditScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            _exercises.add(RoutineExerciseModel(
-              name: 'New Exercise',
-              sets: 3,
-              reps: '10',
-              restSeconds: 90,
-              tip: '',
-              badge: 'Accessory',
-              setup: [],
-              execution: [],
-              mistakes: [],
-            ));
+            _exercises.add(
+              RoutineExerciseModel(
+                name: 'New Exercise',
+                sets: 3,
+                reps: '10',
+                restSeconds: 90,
+                tip: '',
+                badge: 'Accessory',
+                setup: [],
+                execution: [],
+                mistakes: [],
+              ),
+            );
           });
         },
         child: const Icon(Icons.add),

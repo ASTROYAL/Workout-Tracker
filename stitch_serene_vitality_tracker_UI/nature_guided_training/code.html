@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WildStrength | PPL: Push Day</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&amp;family=Epilogue:wght@400;700&amp;family=DM+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .glass-surface {
+            background: rgba(22, 46, 36, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .sunset-glow {
+            box-shadow: 0 10px 30px -10px rgba(255, 107, 53, 0.4);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .form-tip-expand {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .form-tip-active .form-tip-expand {
+            max-height: 200px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#2b3732",
+                      "inverse-surface": "#d8e6dd",
+                      "background": "#0a1611",
+                      "surface-container": "#16221d",
+                      "outline-variant": "#594139",
+                      "primary-fixed": "#ffdbd0",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#27332d",
+                      "secondary-container": "#334c41",
+                      "primary-container": "#ff6b35",
+                      "on-primary-container": "#5f1900",
+                      "tertiary-fixed-dim": "#b8cbbf",
+                      "outline": "#a98a80",
+                      "on-secondary": "#1d352b",
+                      "surface": "#0a1611",
+                      "secondary": "#b1cdbe",
+                      "primary-fixed-dim": "#ffb59d",
+                      "surface-dim": "#0a1611",
+                      "on-surface": "#d8e6dd",
+                      "on-tertiary": "#23342b",
+                      "secondary-fixed": "#cde9da",
+                      "on-tertiary-container": "#24352c",
+                      "on-tertiary-fixed-variant": "#394b41",
+                      "inverse-primary": "#ab3500",
+                      "secondary-fixed-dim": "#b1cdbe",
+                      "on-error-container": "#ffdad6",
+                      "on-primary": "#5d1900",
+                      "primary": "#ffb59d",
+                      "tertiary-container": "#8b9e92",
+                      "on-secondary-fixed": "#072016",
+                      "on-secondary-container": "#a0bbad",
+                      "on-surface-variant": "#e1bfb5",
+                      "surface-bright": "#2f3c36",
+                      "surface-tint": "#ffb59d",
+                      "on-error": "#690005",
+                      "tertiary-fixed": "#d4e7da",
+                      "on-secondary-fixed-variant": "#334c41",
+                      "on-tertiary-fixed": "#0e1f17",
+                      "on-primary-fixed-variant": "#832600",
+                      "surface-container-low": "#121e19",
+                      "surface-container-high": "#202d27",
+                      "on-primary-fixed": "#390c00",
+                      "surface-container-lowest": "#05100c",
+                      "tertiary": "#b8cbbf",
+                      "error-container": "#93000a",
+                      "surface-container-highest": "#2b3732",
+                      "on-background": "#d8e6dd"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "margin-mobile": "16px",
+                      "md": "16px",
+                      "sm": "8px",
+                      "margin-desktop": "32px",
+                      "lg": "24px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "base_unit": "4px"
+              },
+              "fontFamily": {
+                      "headline-md-mobile": ["Playfair Display"],
+                      "stat-lg": ["Playfair Display"],
+                      "display-lg": ["Playfair Display"],
+                      "headline-md": ["Playfair Display"],
+                      "label-caps": ["DM Mono"],
+                      "body-base": ["Epilogue"],
+                      "body-bold": ["Epilogue"]
+              },
+              "fontSize": {
+                      "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                      "stat-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                      "display-lg": ["48px", {"lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "900"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                      "body-base": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+                      "body-bold": ["16px", {"lineHeight": "24px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-base selection:bg-primary-container selection:text-on-primary-container min-h-screen pb-32">
+<!-- Header / TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface-container/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 duration-200 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-primary">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary tracking-tight">WildStrength</h1>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A close-up, high-quality portrait of a focused athlete with subtle sweat, captured in a dimly lit, atmospheric gym environment with deep forest green tones and warm sunset orange highlights. The lighting is dramatic and cinematic, emphasizing texture and determination. The overall aesthetic is premium, organic, and grounded in a nature-inspired sanctuary style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTVTK9DoKnK1VRrH_dgOplzufxk2tNKzu99ZC4UINJuoud7u0YebmJc4TQO1sPcro4PyguF4Dq-MZDmNncR9022tCoGuSx3XjT0b75JpGQgoWnMNGrNt5JrSfKQBhCU9w_sX2JfJJAz3__m-SOILCKN7AMwnIuICe_7i0cC1ydg2Ia9tok-arBNpwb11owYV4iRCxnHywKyHgA_73qGtSC0vKbZiAfYW9e080eHF1YayFc5Ck2cYtiVg"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-margin-mobile md:px-margin-desktop max-w-5xl mx-auto">
+<!-- Progress Bar Section -->
+<section class="mb-xl">
+<div class="flex justify-between items-end mb-sm">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Weekly Progress</span>
+<h2 class="font-headline-md text-on-surface">Consistency Flow</h2>
+</div>
+<span class="font-label-caps text-label-caps text-primary">65% Complete</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden border border-white/5 p-[2px]">
+<div class="h-full bg-gradient-to-r from-primary-container to-primary rounded-full w-[65%] transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(255,107,53,0.3)]"></div>
+</div>
+</section>
+<!-- Session Header -->
+<section class="mb-lg">
+<div class="flex items-center gap-2 mb-xs">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Active Program</span>
+</div>
+<h3 class="font-display-lg text-on-surface mb-2">PPL: Push Day</h3>
+<p class="text-on-surface-variant max-w-md">Focusing on chest, shoulders, and triceps with explosive concentric movements and controlled eccentrics.</p>
+</section>
+<!-- Exercises Bento/List -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md mb-xl">
+<!-- Exercise Card 1 -->
+<div class="glass-surface p-md rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
+<div class="flex justify-between items-start mb-md">
+<div>
+<h4 class="font-headline-md text-on-surface mb-1">Bench Press</h4>
+<span class="font-label-caps text-label-caps text-on-surface-variant px-2 py-1 bg-surface-container rounded border border-white/5">Compound • Chest</span>
+</div>
+<div class="text-right">
+<div class="font-stat-lg text-primary">4 x 8</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">SETS x REPS</div>
+</div>
+</div>
+<!-- Interaction Area -->
+<div class="form-tip-container">
+<button class="flex items-center gap-2 text-primary/80 hover:text-primary transition-colors mb-2" onclick="toggleFormTip(this)">
+<span class="material-symbols-outlined text-[18px]">info</span>
+<span class="font-label-caps text-label-caps">Form Tip</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-300">expand_more</span>
+</button>
+<div class="form-tip-expand">
+<p class="text-sm text-on-surface-variant leading-relaxed pb-2 border-t border-white/5 pt-2 italic">
+                            Keep your shoulder blades retracted and "tucked" into the bench. Maintain a slight arch in the lower back for stability.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Exercise Card 2 -->
+<div class="glass-surface p-md rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex justify-between items-start mb-md">
+<div>
+<h4 class="font-headline-md text-on-surface mb-1">Overhead Press</h4>
+<span class="font-label-caps text-label-caps text-on-surface-variant px-2 py-1 bg-surface-container rounded border border-white/5">Compound • Shoulders</span>
+</div>
+<div class="text-right">
+<div class="font-stat-lg text-primary">3 x 10</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">SETS x REPS</div>
+</div>
+</div>
+<div class="form-tip-container">
+<button class="flex items-center gap-2 text-primary/80 hover:text-primary transition-colors mb-2" onclick="toggleFormTip(this)">
+<span class="material-symbols-outlined text-[18px]">info</span>
+<span class="font-label-caps text-label-caps">Form Tip</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-300">expand_more</span>
+</button>
+<div class="form-tip-expand">
+<p class="text-sm text-on-surface-variant leading-relaxed pb-2 border-t border-white/5 pt-2 italic">
+                            Squeeze your glutes and core to prevent excessive lower back arching. Press the bar in a straight vertical path.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Exercise Card 3 -->
+<div class="glass-surface p-md rounded-xl relative overflow-hidden group md:col-span-2">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-md">
+<div class="flex gap-4 items-center">
+<div class="w-16 h-16 rounded-lg bg-surface-container flex items-center justify-center border border-white/10 shrink-0">
+<span class="material-symbols-outlined text-primary text-3xl">fitness_center</span>
+</div>
+<div>
+<h4 class="font-headline-md text-on-surface mb-1">Tricep Pushdowns</h4>
+<span class="font-label-caps text-label-caps text-on-surface-variant px-2 py-1 bg-surface-container rounded border border-white/5">Isolation • Triceps</span>
+</div>
+</div>
+<div class="flex gap-8 md:text-right">
+<div>
+<div class="font-stat-lg text-primary">3 x 15</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">SETS x REPS</div>
+</div>
+<div class="form-tip-container self-end pb-1">
+<button class="flex items-center gap-2 text-primary/80 hover:text-primary transition-colors" onclick="toggleFormTip(this)">
+<span class="material-symbols-outlined text-[18px]">info</span>
+<span class="font-label-caps text-label-caps">Form Tip</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-300">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+<div class="form-tip-expand mt-2">
+<p class="text-sm text-on-surface-variant leading-relaxed pb-2 border-t border-white/5 pt-2 italic">
+                        Pin your elbows to your ribs. Do not allow your shoulders to roll forward as the weight comes up. Focus on the squeeze at the bottom.
+                    </p>
+</div>
+</div>
+</div>
+<!-- Start Session CTA -->
+<div class="flex justify-center mt-lg mb-xl">
+<button class="bg-primary-container text-on-primary-container font-body-bold px-12 py-5 rounded-full text-lg shadow-xl sunset-glow hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                Start Session
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full bg-surface-container-high/70 backdrop-blur-2xl border-t border-white/10 z-50 rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.4)]">
+<div class="flex justify-around items-center px-4 py-2 pb-safe w-full">
+<a class="flex flex-col items-center justify-center text-primary-container bg-primary-container/10 rounded-full py-1 px-4 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-label-caps text-label-caps">Train</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">nutrition</span>
+<span class="font-label-caps text-label-caps">Fuel</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-caps text-label-caps">Growth</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">share</span>
+<span class="font-label-caps text-label-caps">Logs</span>
+</a>
+</div>
+</nav>
+<!-- Script for Micro-interactions -->
+<script>
+        function toggleFormTip(btn) {
+            const container = btn.closest('.form-tip-container');
+            const parentCard = btn.closest('.glass-surface');
+            const icon = btn.querySelector('.material-symbols-outlined:last-child');
+            
+            if (parentCard.classList.contains('form-tip-active')) {
+                parentCard.classList.remove('form-tip-active');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                parentCard.classList.add('form-tip-active');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Add subtle parallax-ish hover effect to glass cards
+        document.querySelectorAll('.glass-surface').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+            });
+        });
+    </script>
+<!-- Decorative Atmosphere (Shader Simulation) -->
+<div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+<div class="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary-container/10 blur-[150px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-surface-variant/20 blur-[120px] rounded-full"></div>
+</div>
+</body></html>

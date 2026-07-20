@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>WildStrength | Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&amp;family=Epilogue:wght@400;700&amp;family=DM+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#2b3732",
+                    "inverse-surface": "#d8e6dd",
+                    "background": "#0a1611",
+                    "surface-container": "#16221d",
+                    "outline-variant": "#594139",
+                    "primary-fixed": "#ffdbd0",
+                    "error": "#ffb4ab",
+                    "inverse-on-surface": "#27332d",
+                    "secondary-container": "#334c41",
+                    "primary-container": "#ff6b35",
+                    "on-primary-container": "#5f1900",
+                    "tertiary-fixed-dim": "#b8cbbf",
+                    "outline": "#a98a80",
+                    "on-secondary": "#1d352b",
+                    "surface": "#0a1611",
+                    "secondary": "#b1cdbe",
+                    "primary": "#ffb59d",
+                    "tertiary-container": "#8b9e92",
+                    "on-secondary-fixed": "#072016",
+                    "on-secondary-container": "#a0bbad",
+                    "on-surface-variant": "#e1bfb5",
+                    "surface-bright": "#2f3c36",
+                    "surface-tint": "#ffb59d",
+                    "on-error": "#690005",
+                    "tertiary-fixed": "#d4e7da",
+                    "on-secondary-fixed-variant": "#334c41",
+                    "on-tertiary-fixed": "#0e1f17",
+                    "on-primary-fixed-variant": "#832600",
+                    "surface-container-low": "#121e19",
+                    "surface-container-high": "#202d27",
+                    "on-primary-fixed": "#390c00",
+                    "surface-container-lowest": "#05100c",
+                    "tertiary": "#b8cbbf",
+                    "error-container": "#93000a",
+                    "surface-container-highest": "#2b3732",
+                    "on-background": "#d8e6dd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "margin-mobile": "16px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "margin-desktop": "32px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "base_unit": "4px"
+            },
+            "fontFamily": {
+                    "headline-md-mobile": ["Playfair Display"],
+                    "stat-lg": ["Playfair Display"],
+                    "display-lg": ["Playfair Display"],
+                    "headline-md": ["Playfair Display"],
+                    "label-caps": ["DM Mono"],
+                    "body-base": ["Epilogue"],
+                    "body-bold": ["Epilogue"]
+            },
+            "fontSize": {
+                    "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "stat-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "900"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                    "body-base": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "body-bold": ["16px", {"lineHeight": "24px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0a1611;
+            color: #d8e6dd;
+            font-family: 'Epilogue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass {
+            background: rgba(22, 34, 29, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .mask-radial {
+            mask-image: radial-gradient(circle, black 50%, transparent 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="overflow-x-hidden pb-24">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface-container/80 backdrop-blur-xl border-b border-white/10 shadow-sm flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 w-full">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary active:scale-95 duration-200 cursor-pointer" data-icon="menu">menu</span>
+<h1 class="font-headline-md text-primary tracking-tight">WildStrength</h1>
+</div>
+<div class="w-10 h-10 rounded-full border border-primary/20 overflow-hidden hover:opacity-80 transition-opacity cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A high-quality professional portrait of a fit individual with a serene expression, outdoors in a lush forest during golden hour. The lighting is soft and warm, casting organic shadows. The overall aesthetic is premium and health-focused, matching a dark green and sunset orange theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Ka9GNx_QAv5mCO-R0aYGwrUEjWtAVbs3xfzcpoAYDVfVHRSQ3ohn2NLuKmoSGEJeHydjTzZnVF7pclaeL_66sBcgcfuPUciw5phbnrcN6FgfcGYAACXP7NCbrGU5xqM-j7KfcSHsnpT7M3fM1PBfHf2rQSzlJneoZVHIBo0KEaj3_CJwLr5CV4z8jcR5LbgMVeUBihZwuRH2PT8EVCax5lejdXKDD_aO1EANVl_Kt3ktfC-odAmc0A"/>
+</div>
+</header>
+<main class="mt-20 px-margin-mobile md:px-margin-desktop space-y-xl max-w-7xl mx-auto">
+<!-- Welcome Header -->
+<section class="space-y-xs animate-in fade-in slide-in-from-bottom-4 duration-700">
+<p class="font-label-caps text-label-caps text-on-surface-variant">MONDAY, JUNE 12</p>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface leading-tight">Welcome back, Alex</h2>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter lg:gap-xl">
+<!-- Primary Card: Current Streak -->
+<div class="md:col-span-8 relative overflow-hidden rounded-[2rem] h-[280px] md:h-[320px] shadow-2xl group transition-transform duration-500 hover:scale-[1.01]">
+<div class="absolute inset-0 z-0 scale-105 group-hover:scale-100 transition-transform duration-1000" data-alt="A cinematic, ultra-wide landscape of a misty ancient forest at dawn. Sunbeams pierce through towering pine trees and dense ferns, creating a sacred, cathedral-like atmosphere. The color palette is dominated by deep forest greens and brilliant orange light. High-end photography style with atmospheric depth and soft bokeh." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_YVwegpvELDVWJrRW2e2j0n2XcQAgT3eNR4lEmneISG9GmzRri9lNP3FhtSmrf7v3Lg4Knhdvqv2_Iv-xNVTKfC3aTMbeNjAW2caFAv04U00Avxeo1tcOUcQyvejs-xSxoNaFoY1vHkRXl7-EEvU-N01cKMVyyFrjTDpdglkWjLdGxdMZZ9fi3hff_7-nyUpPVE5DD2dkCdvDOxZWH3cdMtBZCw_4fkqD9ttNZd2p58XEVz9cxlRNVg')">
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent z-10"></div>
+<div class="relative z-20 h-full p-lg flex flex-col justify-end">
+<div class="flex items-end gap-2">
+<span class="font-stat-lg text-[64px] text-primary leading-none">14</span>
+<div class="pb-2">
+<p class="font-label-caps text-label-caps text-primary/80 uppercase">Day Streak</p>
+<p class="font-body-base text-on-surface/90">Strength in consistency.</p>
+</div>
+</div>
+</div>
+<!-- Micro-interaction: Float icon -->
+<div class="absolute top-6 right-6 z-20 w-12 h-12 rounded-full glass flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" data-icon="local_fire_department" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+</div>
+<!-- Macro Summary (Glassmorphic) -->
+<div class="md:col-span-4 glass rounded-[2rem] p-lg flex flex-col justify-between space-y-md">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-headline-md-mobile text-on-surface">Fuel Check</h3>
+<span class="material-symbols-outlined text-tertiary" data-icon="nutrition">nutrition</span>
+</div>
+<div class="relative h-40 flex items-center justify-center">
+<!-- Progress Ring Representation -->
+<div class="absolute inset-0 flex items-center justify-center">
+<svg class="w-32 h-32 transform -rotate-90">
+<circle class="text-surface-variant" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary-container transition-all duration-1000" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364.4" stroke-dashoffset="100" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-stat-lg text-stat-lg text-on-surface">1,840</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">KCAL LEFT</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="text-center">
+<p class="font-label-caps text-[10px] text-on-surface-variant">PRO</p>
+<p class="font-body-bold text-on-surface">142g</p>
+</div>
+<div class="text-center">
+<p class="font-label-caps text-[10px] text-on-surface-variant">CARB</p>
+<p class="font-body-bold text-on-surface">185g</p>
+</div>
+<div class="text-center">
+<p class="font-label-caps text-[10px] text-on-surface-variant">FAT</p>
+<p class="font-body-bold text-on-surface">62g</p>
+</div>
+</div>
+</div>
+<!-- Workout Section -->
+<div class="md:col-span-7 space-y-md">
+<div class="flex justify-between items-end px-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Today's Session</h3>
+<p class="font-label-caps text-primary hover:opacity-80 transition-opacity cursor-pointer">Change Plan</p>
+</div>
+<div class="glass rounded-[2rem] p-lg border-l-4 border-primary-container overflow-hidden relative">
+<div class="relative z-10 space-y-lg">
+<div class="flex justify-between items-center">
+<div>
+<h4 class="font-headline-md text-headline-md text-primary">Push Day</h4>
+<p class="font-body-base text-on-surface-variant">Hypertrophy Focus • 65 min</p>
+</div>
+<button class="bg-primary-container text-on-primary-container font-body-bold px-lg py-sm rounded-full shadow-lg active:scale-95 transition-all">Start</button>
+</div>
+<div class="space-y-md">
+<!-- Exercise Preview 1 -->
+<div class="flex items-center gap-md group cursor-pointer">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+</div>
+<div class="flex-1 border-b border-white/5 pb-md">
+<p class="font-body-bold text-on-surface group-hover:text-primary transition-colors">Incline Dumbbell Press</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant">4 SETS • 8-12 REPS</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Exercise Preview 2 -->
+<div class="flex items-center gap-md group cursor-pointer">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+</div>
+<div class="flex-1 border-b border-white/5 pb-md">
+<p class="font-body-bold text-on-surface group-hover:text-primary transition-colors">Overhead Press</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant">3 SETS • 10 REPS</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Exercise Preview 3 -->
+<div class="flex items-center gap-md group cursor-pointer">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+</div>
+<div class="flex-1 pb-md">
+<p class="font-body-bold text-on-surface group-hover:text-primary transition-colors">Tricep Dips</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant">3 SETS • FAILURE</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Activity Recommendation -->
+<div class="md:col-span-5 space-y-md">
+<div class="px-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Suggested Activity</h3>
+</div>
+<div class="relative group h-full rounded-[2rem] overflow-hidden bg-surface-container">
+<div class="absolute inset-0" data-alt="A peaceful first-person perspective of a trail through a lush, green woodland. Sunlight filters through a canopy of leaves, creating dappled patterns on the dirt path. The atmosphere is quiet, serene, and refreshing. Natural photography, vibrant moss tones, and soft focus." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC8xu96WWsdqfF8rhUCombEz81YX6Yzqirrq8mEtfsnP29o3Xe266HNC4gcX7wi6h0qdno3f6OWMKIwJVbIar1URfN9BmaWCcEUVVSb7Ucbs5HdbZc_WgNSlj6iTFM8U-R2GYbVJ1OHrJkYjSCHCR1DPA7WqkIQdLX6piTlHCIwtVf1zjB_O8WFv7kyhqVV_DfVUFlaEownPpob3WeEcmI0X4QdMp89GrYU7Io7RT5jpr1O2izFisiL-Q')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"></div>
+<div class="relative h-full min-h-[240px] p-lg flex flex-col justify-end">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-secondary-container/80 text-on-secondary-container text-[10px] font-label-caps px-2 py-0.5 rounded-full backdrop-blur-sm">REST DAY BONUS</span>
+<span class="bg-primary-container/80 text-on-primary-container text-[10px] font-label-caps px-2 py-0.5 rounded-full backdrop-blur-sm">+150 XP</span>
+</div>
+<h4 class="font-headline-md text-on-surface">Nature Walk</h4>
+<p class="font-body-base text-on-surface/80 mb-4">A 20-min gentle stroll through local woodland to boost recovery and mental clarity.</p>
+<button class="flex items-center justify-center gap-2 w-full glass text-on-surface font-body-bold py-md rounded-xl hover:bg-white/10 transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="map">map</span>
+                            Find Trails
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile Anchor) -->
+<nav class="fixed bottom-0 w-full rounded-t-xl z-50 bg-surface-container-high/70 backdrop-blur-2xl border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.4)] flex justify-around items-center px-4 py-2 pb-safe w-full md:hidden">
+<div class="flex flex-col items-center justify-center text-primary-container bg-primary-container/10 rounded-full py-1 px-4 transition-all">
+<span class="material-symbols-outlined" data-icon="fitness_center" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-label-caps text-label-caps mt-1">Train</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="nutrition">nutrition</span>
+<span class="font-label-caps text-label-caps mt-1">Fuel</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-label-caps text-label-caps mt-1">Growth</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+<span class="font-label-caps text-label-caps mt-1">Logs</span>
+</div>
+</nav>
+<!-- Desktop Floating Navigation Side-bar style hint (responsive view) -->
+<div class="hidden md:flex fixed right-8 top-1/2 -translate-y-1/2 flex-col gap-lg glass p-4 rounded-full z-40 border border-white/10">
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-primary-container bg-primary-container/10"><span class="material-symbols-outlined" data-icon="fitness_center" style="font-variation-settings: 'FILL' 1;">fitness_center</span></button>
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="nutrition">nutrition</span></button>
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="monitoring">monitoring</span></button>
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="share">share</span></button>
+</div>
+<!-- Floating Action Button Contextual (Visible on Dashboard) -->
+<div class="fixed bottom-24 right-margin-mobile md:bottom-8 md:right-32 z-40">
+<button class="w-16 h-16 rounded-full bg-primary-container text-on-primary-container shadow-[0_8px_32px_rgba(255,107,53,0.3)] flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[32px]" data-icon="add">add</span>
+</button>
+</div>
+<script>
+        // Micro-interaction for macro circle animation
+        window.addEventListener('DOMContentLoaded', () => {
+            const circle = document.querySelector('circle.text-primary-container');
+            if (circle) {
+                // Trigger animation after a short delay
+                setTimeout(() => {
+                    circle.style.strokeDashoffset = '100'; // Target value
+                }, 300);
+            }
+        });
+
+        // Simple scroll parallax effect for cards
+        window.addEventListener('scroll', () => {
+            const scroll = window.pageYOffset;
+            const streakBg = document.querySelector('[data-alt*="misty ancient forest"]');
+            if (streakBg) {
+                streakBg.style.transform = `translateY(${scroll * 0.1}px) scale(1.05)`;
+            }
+        });
+    </script>
+</body></html>

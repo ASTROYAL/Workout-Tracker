@@ -5,7 +5,6 @@ import 'providers.dart';
 import 'screens/workout_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/nutrition_screen.dart';
-import 'screens/settings_screen.dart';
 
 void main() {
   runApp(
@@ -25,7 +24,7 @@ class WorkoutTrackerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'PPL Tracker',
+      title: 'Ferox',
       theme: AppTheme.themeData,
       home: const MainNavigationScreen(),
       debugShowCheckedModeBanner: false,
@@ -45,9 +44,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   final List<Widget> _screens = [
     const WorkoutScreen(),
-    const HistoryScreen(),
     const NutritionScreen(),
-    const SettingsScreen(),
+    const HistoryScreen(),
   ];
 
   @override
@@ -65,19 +63,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
-            label: 'TRAIN',
+            label: 'Train',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.restaurant), label: 'Fuel'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'HISTORY',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant),
-            label: 'FUEL',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'SETTINGS',
+            icon: Icon(Icons.show_chart),
+            label: 'Growth',
           ),
         ],
       ),

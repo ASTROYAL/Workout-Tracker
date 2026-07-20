@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:fl_chart/fl_chart.dart';
+import '../models.dart';
 import '../providers.dart';
 import '../theme.dart';
+import 'wild_widgets.dart';
 
 class NutritionScreen extends StatelessWidget {
   const NutritionScreen({super.key});
@@ -16,190 +18,186 @@ class NutritionScreen extends StatelessWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    final caloriesLeft = (provider.targetCalories - day.calories).clamp(
+      0,
+      provider.targetCalories,
+    );
+    final calorieProgress = provider.targetCalories <= 0
+        ? 0.0
+        : (day.calories / provider.targetCalories).clamp(0.0, 1.0);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Nutrition Log')),
+      appBar: const WildHeader(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddFoodDialog(context, provider),
+        child: const Icon(Icons.add),
+      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 96),
         children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppTheme.ink,
-              borderRadius: BorderRadius.circular(4),
+          // Date + Title below WildStrength header
+          Text(
+            DateFormat('EEEE, MMMM d').format(DateTime.now()).toUpperCase(),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AppTheme.orangeSoft,
+              letterSpacing: 2.0,
             ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Daily Fueling',
+            style: Theme.of(context).textTheme.displayMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: AppTheme.snow,
+            ),
+          ),
+          Text(
+            'Nourish your inner strength with balanced, organic energy.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 20),
+
+          // Macronutrient Split
+          WildCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('REMAINING', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white54)),
-                const SizedBox(height: 8),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      '${provider.targetCalories - day.calories}',
-                      style: Theme.of(context).textTheme.displayMedium?.copyWith(color: AppTheme.paper),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '/ ${provider.targetCalories} kcal',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white54),
-                    ),
-                  ],
+                Text(
+                  'MACRONUTRIENT SPLIT',
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
-                const SizedBox(height: 24),
-                _buildMacroBar(context, 'Protein', day.protein, provider.targetProtein, AppTheme.pull),
-                const SizedBox(height: 12),
-                _buildMacroBar(context, 'Carbs', day.carbs, provider.targetCarbs, AppTheme.legs),
-                const SizedBox(height: 12),
-                _buildMacroBar(context, 'Fats', day.fats, provider.targetFats, AppTheme.push),
+                const SizedBox(height: 14),
+
+                // Total Calories – larger progress bar
+                _CaloriesBar(
+                  consumed: day.calories,
+                  target: provider.targetCalories,
+                  left: caloriesLeft,
+                  progress: calorieProgress,
+                ),
+                const SizedBox(height: 6),
+
+                _MacroBar(
+                  label: 'Protein',
+                  value: day.protein,
+                  target: provider.targetProtein,
+                  color: AppTheme.sage,
+                ),
+                _MacroBar(
+                  label: 'Carbohydrates',
+                  value: day.carbs,
+                  target: provider.targetCarbs,
+                  color: AppTheme.sage.withValues(alpha: 0.82),
+                ),
+                _MacroBar(
+                  label: 'Healthy Fats',
+                  value: day.fats,
+                  target: provider.targetFats,
+                  color: AppTheme.blush,
+                ),
+                const SizedBox(height: 10),
+                WildCard(
+                  radius: 18,
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: AppTheme.orange.withValues(alpha: 0.16),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.eco_outlined,
+                          color: AppTheme.orangeSoft,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          day.carbs < provider.targetCarbs
+                              ? 'Add slow carbs or greens to round out today.'
+                              : 'Energy target is looking strong today.',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppTheme.snow),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 24),
-          _buildWeightTracker(context, provider),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Today\'s Log', style: Theme.of(context).textTheme.titleMedium),
-              IconButton(
-                icon: const Icon(Icons.add_circle, color: AppTheme.accent),
-                onPressed: () => _showAddFoodDialog(context, provider),
-              )
-            ],
-          ),
-          ...provider.currentDayLogs.map((log) => Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              title: Text(log.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
-              subtitle: Text('${log.calories} kcal · ${log.protein}g P · ${log.carbs}g C · ${log.fats}g F'),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete_outline, color: AppTheme.muted),
-                onPressed: () => provider.deleteFoodLog(log),
-              ),
-            ),
-          ))
-        ],
-      ),
-    );
-  }
 
-  Widget _buildWeightTracker(BuildContext context, NutritionProvider provider) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppTheme.border),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+          // Meal Journals header with VIEW HISTORY
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Bodyweight', style: Theme.of(context).textTheme.titleMedium),
-              IconButton(
-                icon: const Icon(Icons.add_circle_outline, color: AppTheme.accent2),
+              Text(
+                'Meal Journals',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              TextButton(
                 onPressed: () {
-                  _showWeightDialog(context, provider);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MealHistoryScreen(),
+                    ),
+                  );
                 },
-              )
+                child: const Text('VIEW HISTORY'),
+              ),
             ],
           ),
-          const SizedBox(height: 16),
-          if (provider.weightLogs.isNotEmpty) ...[
-            Text('Current Weight: ${provider.weightLogs.last['weightKg']} kg', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.paper, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-          ],
-          provider.weightLogs.length < 2
-              ? const Text('Log at least 2 weight entries to see the trend chart.')
-              : SizedBox(
-                  height: 150,
-                  child: LineChart(
-                    LineChartData(
-                      gridData: const FlGridData(show: false),
-                      titlesData: const FlTitlesData(
-                        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: provider.weightLogs.asMap().entries.map((e) {
-                            return FlSpot(e.key.toDouble(), e.value['weightKg'] as double);
-                          }).toList(),
-                          isCurved: true,
-                          color: AppTheme.accent2,
-                          barWidth: 3,
-                          isStrokeCapRound: true,
-                          dotData: const FlDotData(show: true),
-                          belowBarData: BarAreaData(show: false),
+          const SizedBox(height: 12),
+
+          // Meal rows – max 3, compact single-line
+          if (provider.currentDayLogs.isEmpty)
+            WildCard(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 18,
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.restaurant_outlined,
+                    color: AppTheme.blush,
+                    size: 26,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'No meals logged yet',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        Text(
+                          'Tap + to add breakfast, lunch, dinner, or a custom entry.',
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     ),
                   ),
-                )
+                ],
+              ),
+            )
+          else
+            ...provider.currentDayLogs.reversed.take(3).map(
+              (log) => _MealRow(
+                log: log,
+                onDelete: () => provider.deleteFoodLog(log),
+              ),
+            ),
         ],
       ),
-    );
-  }
-
-  void _showWeightDialog(BuildContext context, NutritionProvider provider) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Log Weight'),
-        content: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(hintText: 'Weight in kg'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              final w = double.tryParse(controller.text);
-              if (w != null) {
-                provider.addWeightLog(w);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Weight logged!')),
-                  );
-                }
-              }
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMacroBar(BuildContext context, String label, int current, int target, Color color) {
-    double percent = (current / target).clamp(0.0, 1.0);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white54)),
-            Text('${current}g / ${target}g', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppTheme.paper, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        const SizedBox(height: 4),
-        LinearProgressIndicator(
-          value: percent,
-          backgroundColor: Colors.white12,
-          color: color,
-          minHeight: 6,
-        ),
-      ],
     );
   }
 
@@ -209,76 +207,349 @@ class NutritionScreen extends StatelessWidget {
     final proteinController = TextEditingController();
     final carbsController = TextEditingController();
     final fatsController = TextEditingController();
-
-    // Defaults optimized for Indian veg recomp
-    final List<Map<String, dynamic>> quickAdd = [
+    final quickAdd = [
       {'name': 'Paneer (100g)', 'cals': 265, 'p': 18, 'c': 1, 'f': 20},
       {'name': 'Dal (1 bowl)', 'cals': 150, 'p': 9, 'c': 20, 'f': 5},
-      {'name': 'Whey Protein (1 scoop)', 'cals': 120, 'p': 24, 'c': 3, 'f': 1},
-      {'name': 'Soya Chunks (50g dry)', 'cals': 170, 'p': 26, 'c': 16, 'f': 0},
-      {'name': 'Roti (1 medium)', 'cals': 100, 'p': 3, 'c': 20, 'f': 1},
+      {'name': 'Whey Protein', 'cals': 120, 'p': 24, 'c': 3, 'f': 1},
+      {'name': 'Soya Chunks', 'cals': 170, 'p': 26, 'c': 16, 'f': 0},
+      {'name': 'Roti', 'cals': 100, 'p': 3, 'c': 20, 'f': 1},
     ];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: AppTheme.canopy,
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,
+          left: 16,
+          right: 16,
+          top: 20,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Quick Add',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: quickAdd.map((food) {
+                  return ActionChip(
+                    label: Text(food['name'] as String),
+                    onPressed: () {
+                      provider.addFoodLog(
+                        food['name'] as String,
+                        food['cals'] as int,
+                        food['p'] as int,
+                        food['c'] as int,
+                        food['f'] as int,
+                      );
+                      Navigator.pop(sheetContext);
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                'Custom Add',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Food Name'),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: calsController,
+                      decoration: const InputDecoration(labelText: 'Kcal'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: proteinController,
+                      decoration: const InputDecoration(labelText: 'Protein'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: carbsController,
+                      decoration: const InputDecoration(labelText: 'Carbs'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: fatsController,
+                      decoration: const InputDecoration(labelText: 'Fats'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final name = nameController.text.trim();
+                    if (name.isEmpty) return;
+                    provider.addFoodLog(
+                      name,
+                      int.tryParse(calsController.text) ?? 0,
+                      int.tryParse(proteinController.text) ?? 0,
+                      int.tryParse(carbsController.text) ?? 0,
+                      int.tryParse(fatsController.text) ?? 0,
+                    );
+                    Navigator.pop(sheetContext);
+                  },
+                  child: const Text('Log Meal'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Calories bar – larger to visually distinguish it as the primary macro
+class _CaloriesBar extends StatelessWidget {
+  final int consumed;
+  final int target;
+  final int left;
+  final double progress;
+
+  const _CaloriesBar({
+    required this.consumed,
+    required this.target,
+    required this.left,
+    required this.progress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total Calories',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              Text(
+                '$consumed / ${target} kcal',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppTheme.orangeSoft,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '$left kcal remaining',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppTheme.blush,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 14, // Larger bar for total calories
+              backgroundColor: AppTheme.snow.withValues(alpha: 0.08),
+              color: AppTheme.orange,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MacroBar extends StatelessWidget {
+  final String label;
+  final int value;
+  final int target;
+  final Color color;
+
+  const _MacroBar({
+    required this.label,
+    required this.value,
+    required this.target,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final percent = target <= 0 ? 0.0 : (value / target).clamp(0.0, 1.0);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                '${value}g / ${target}g',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppTheme.orangeSoft,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              value: percent,
+              minHeight: 7,
+              backgroundColor: AppTheme.snow.withValues(alpha: 0.08),
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Compact single-line meal row
+class _MealRow extends StatelessWidget {
+  final FoodLogModel log;
+  final VoidCallback onDelete;
+
+  const _MealRow({required this.log, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: WildCard(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: Row(
           children: [
-            Text('Quick Add', style: Theme.of(context).textTheme.labelSmall),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: quickAdd.map((food) => ActionChip(
-                label: Text(food['name'] as String),
-                onPressed: () {
-                  provider.addFoodLog(food['name'] as String, food['cals'] as int, food['p'] as int, food['c'] as int, food['f'] as int);
-                  Navigator.pop(context);
-                },
-              )).toList(),
-            ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 16),
-            Text('Custom Add', style: Theme.of(context).textTheme.labelSmall),
-            TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Food Name')),
-            Row(
-              children: [
-                Expanded(child: TextField(controller: calsController, decoration: const InputDecoration(labelText: 'Kcal'), keyboardType: TextInputType.number)),
-                const SizedBox(width: 8),
-                Expanded(child: TextField(controller: proteinController, decoration: const InputDecoration(labelText: 'Protein (g)'), keyboardType: TextInputType.number)),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(child: TextField(controller: carbsController, decoration: const InputDecoration(labelText: 'Carbs (g)'), keyboardType: TextInputType.number)),
-                const SizedBox(width: 8),
-                Expanded(child: TextField(controller: fatsController, decoration: const InputDecoration(labelText: 'Fats (g)'), keyboardType: TextInputType.number)),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  final name = nameController.text.trim();
-                  if (name.isEmpty) return;
-                  final cals = int.tryParse(calsController.text) ?? 0;
-                  final p = int.tryParse(proteinController.text) ?? 0;
-                  final c = int.tryParse(carbsController.text) ?? 0;
-                  final f = int.tryParse(fatsController.text) ?? 0;
-                  provider.addFoodLog(name, cals, p, c, f);
-                  Navigator.pop(context);
-                },
-                child: const Text('Add Food'),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppTheme.orange.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '${log.calories} kcal',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppTheme.orangeSoft,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                log.name,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.snow,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Text(
+              '${log.protein}P · ${log.carbs}C · ${log.fats}F',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: AppTheme.blush,
+              ),
+            ),
+            const SizedBox(width: 6),
+            GestureDetector(
+              onTap: onDelete,
+              child: const Icon(
+                Icons.close,
+                color: AppTheme.blush,
+                size: 16,
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class MealHistoryScreen extends StatelessWidget {
+  const MealHistoryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<NutritionProvider>();
+    return Scaffold(
+      appBar: const WildHeader(),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 96),
+        children: [
+          Text(
+            'MEAL HISTORY',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AppTheme.orangeSoft,
+              letterSpacing: 2.0,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'All Meals',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 16),
+          if (provider.currentDayLogs.isEmpty)
+            WildCard(
+              child: Center(
+                child: Text(
+                  'No meals logged today.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            )
+          else
+            ...provider.currentDayLogs.reversed.map(
+              (log) => _MealRow(
+                log: log,
+                onDelete: () => provider.deleteFoodLog(log),
+              ),
+            ),
+        ],
       ),
     );
   }

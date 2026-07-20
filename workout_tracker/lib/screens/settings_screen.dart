@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers.dart';
 import '../theme.dart';
 import 'routine_edit_screen.dart';
+import 'wild_widgets.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -12,53 +13,122 @@ class SettingsScreen extends StatelessWidget {
     final workoutProvider = context.watch<WorkoutProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: const WildHeader(),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 96),
         children: [
-          Text('ROUTINES', style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: 8),
-          ...workoutProvider.routines.map((routine) => Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              title: Text(routine.name, style: Theme.of(context).textTheme.titleMedium),
-              subtitle: Text(routine.subtitle),
-              trailing: const Icon(Icons.edit, color: AppTheme.accent2),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RoutineEditScreen(routine: routine)),
-                );
-              },
+          Text(
+            'CONTROL ROOM',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppTheme.orangeSoft),
+          ),
+          Text(
+            'Logs',
+            style: Theme.of(context).textTheme.displayMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.snow,
             ),
-          )),
-          const SizedBox(height: 32),
-          Text('NUTRITION TARGETS', style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: 8),
+          ),
+          const SizedBox(height: 20),
+          Text('ROUTINES', style: Theme.of(context).textTheme.labelMedium),
+          const SizedBox(height: 10),
+          ...workoutProvider.routines.map(
+            (routine) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: WildCard(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RoutineEditScreen(routine: routine),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppTheme.orange.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.fitness_center,
+                        color: AppTheme.orangeSoft,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            routine.name,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          Text(
+                            routine.subtitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.edit_outlined, color: AppTheme.blush),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'NUTRITION TARGETS',
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
+          const SizedBox(height: 10),
           Consumer<NutritionProvider>(
             builder: (context, nutritionProvider, child) {
-              return Card(
-                child: ListTile(
-                  title: const Text('Daily Targets'),
-                  subtitle: Text('${nutritionProvider.targetCalories} kcal · ${nutritionProvider.targetProtein}g P · ${nutritionProvider.targetCarbs}g C · ${nutritionProvider.targetFats}g F'),
-                  trailing: const Icon(Icons.edit, color: AppTheme.accent),
-                  onTap: () {
-                    _showEditTargetsDialog(context, nutritionProvider);
-                  },
+              return WildCard(
+                onTap: () => _showEditTargetsDialog(context, nutritionProvider),
+                child: Row(
+                  children: [
+                    const Icon(Icons.tune, color: AppTheme.orangeSoft),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        '${nutritionProvider.targetCalories} kcal - ${nutritionProvider.targetProtein}g P - ${nutritionProvider.targetCarbs}g C - ${nutritionProvider.targetFats}g F',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, color: AppTheme.blush),
+                  ],
                 ),
               );
-            }
+            },
           ),
         ],
       ),
     );
   }
 
-  void _showEditTargetsDialog(BuildContext context, NutritionProvider provider) {
-    final calsController = TextEditingController(text: provider.targetCalories.toString());
-    final protController = TextEditingController(text: provider.targetProtein.toString());
-    final carbsController = TextEditingController(text: provider.targetCarbs.toString());
-    final fatsController = TextEditingController(text: provider.targetFats.toString());
+  void _showEditTargetsDialog(
+    BuildContext context,
+    NutritionProvider provider,
+  ) {
+    final calsController = TextEditingController(
+      text: provider.targetCalories.toString(),
+    );
+    final protController = TextEditingController(
+      text: provider.targetProtein.toString(),
+    );
+    final carbsController = TextEditingController(
+      text: provider.targetCarbs.toString(),
+    );
+    final fatsController = TextEditingController(
+      text: provider.targetFats.toString(),
+    );
 
     showDialog(
       context: context,
@@ -73,16 +143,19 @@ class SettingsScreen extends StatelessWidget {
                 decoration: const InputDecoration(labelText: 'Calories'),
                 keyboardType: TextInputType.number,
               ),
+              const SizedBox(height: 10),
               TextField(
                 controller: protController,
                 decoration: const InputDecoration(labelText: 'Protein (g)'),
                 keyboardType: TextInputType.number,
               ),
+              const SizedBox(height: 10),
               TextField(
                 controller: carbsController,
                 decoration: const InputDecoration(labelText: 'Carbs (g)'),
                 keyboardType: TextInputType.number,
               ),
+              const SizedBox(height: 10),
               TextField(
                 controller: fatsController,
                 decoration: const InputDecoration(labelText: 'Fats (g)'),
@@ -98,11 +171,15 @@ class SettingsScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              final c = int.tryParse(calsController.text) ?? provider.targetCalories;
-              final p = int.tryParse(protController.text) ?? provider.targetProtein;
-              final cb = int.tryParse(carbsController.text) ?? provider.targetCarbs;
-              final f = int.tryParse(fatsController.text) ?? provider.targetFats;
-              provider.updateTargets(c, p, cb, f);
+              final calories =
+                  int.tryParse(calsController.text) ?? provider.targetCalories;
+              final protein =
+                  int.tryParse(protController.text) ?? provider.targetProtein;
+              final carbs =
+                  int.tryParse(carbsController.text) ?? provider.targetCarbs;
+              final fats =
+                  int.tryParse(fatsController.text) ?? provider.targetFats;
+              provider.updateTargets(calories, protein, carbs, fats);
               Navigator.pop(context);
             },
             child: const Text('Save'),

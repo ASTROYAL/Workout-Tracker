@@ -1,1 +1,56 @@
-node_modules
+# ── Node / Web ──────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log
+
+# ── Build artifacts / release APKs ──────────────────────────────────────────
+*.apk
+*.aab
+*.ipa
+*.app
+app-release.apk
+app-arm64-v8a-release.apk
+app-armeabi-v7a-release.apk
+app-x86_64-release.apk
+workout_tracker/build/
+
+# ── Android signing secrets (NEVER commit these) ─────────────────────────────
+*.jks
+*.keystore
+key.properties
+workout_tracker/android/app/upload-keystore.jks
+google-services.json
+
+# ── iOS secrets ──────────────────────────────────────────────────────────────
+*.p12
+*.mobileprovision
+GoogleService-Info.plist
+workout_tracker/ios/Flutter/Flutter.framework
+workout_tracker/ios/Flutter/Flutter.podspec
+workout_tracker/ios/Pods/
+workout_tracker/ios/.symlinks/
+workout_tracker/ios/Flutter/.last_build_id
+Podfile.lock
+
+# ── Flutter / Dart generated ─────────────────────────────────────────────────
+workout_tracker/.dart_tool/
+workout_tracker/.flutter-plugins
+workout_tracker/.flutter-plugins-dependencies
+workout_tracker/.pub-cache/
+workout_tracker/.pub/
+workout_tracker/pubspec.lock
+
+# ── IDE / editor ─────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+Thumbs.db
+
+# ── Local env / secrets ───────────────────────────────────────────────────────
+.env
+.env.*
+*.pem
+secrets/

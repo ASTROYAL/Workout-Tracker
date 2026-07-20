@@ -22,28 +22,34 @@ class RoutineExerciseModel {
   });
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'sets': sets,
-        'reps': reps,
-        'restSeconds': restSeconds,
-        'tip': tip,
-        'badge': badge,
-        'setup': setup,
-        'execution': execution,
-        'mistakes': mistakes,
-      };
+    'name': name,
+    'sets': sets,
+    'reps': reps,
+    'restSeconds': restSeconds,
+    'tip': tip,
+    'badge': badge,
+    'setup': setup,
+    'execution': execution,
+    'mistakes': mistakes,
+  };
 
   factory RoutineExerciseModel.fromJson(Map<String, dynamic> json) {
     return RoutineExerciseModel(
       name: json['name'] as String,
-      sets: json['sets'] as int,
+      sets: json['sets'] is int
+          ? json['sets'] as int
+          : (json['sets'] as num).toInt(),
       reps: json['reps'] as String,
-      restSeconds: json['restSeconds'] as int,
+      restSeconds: json['restSeconds'] is int
+          ? json['restSeconds'] as int
+          : (json['restSeconds'] as num).toInt(),
       tip: json['tip'] as String,
       badge: json['badge'] as String,
       setup: (json['setup'] as List?)?.map((e) => e as String).toList() ?? [],
-      execution: (json['execution'] as List?)?.map((e) => e as String).toList() ?? [],
-      mistakes: (json['mistakes'] as List?)?.map((e) => e as String).toList() ?? [],
+      execution:
+          (json['execution'] as List?)?.map((e) => e as String).toList() ?? [],
+      mistakes:
+          (json['mistakes'] as List?)?.map((e) => e as String).toList() ?? [],
     );
   }
 }
@@ -116,19 +122,20 @@ class NutritionDayModel {
   });
 
   Map<String, dynamic> toJson() => {
-        'date': date,
-        'calories': calories,
-        'protein': protein,
-        'carbs': carbs,
-        'fats': fats,
-      };
+    'date': date,
+    'calories': calories,
+    'protein': protein,
+    'carbs': carbs,
+    'fats': fats,
+  };
 
-  factory NutritionDayModel.fromJson(Map<String, dynamic> json) => NutritionDayModel(
+  factory NutritionDayModel.fromJson(Map<String, dynamic> json) =>
+      NutritionDayModel(
         date: json['date'] as String,
-        calories: json['calories'] as int,
-        protein: json['protein'] as int,
-        carbs: json['carbs'] as int,
-        fats: json['fats'] as int,
+        calories: (json['calories'] as num).toInt(),
+        protein: (json['protein'] as num).toInt(),
+        carbs: (json['carbs'] as num).toInt(),
+        fats: (json['fats'] as num).toInt(),
       );
 }
 
@@ -152,22 +159,22 @@ class FoodLogModel {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'date': date,
-        'name': name,
-        'calories': calories,
-        'protein': protein,
-        'carbs': carbs,
-        'fats': fats,
-      };
+    'id': id,
+    'date': date,
+    'name': name,
+    'calories': calories,
+    'protein': protein,
+    'carbs': carbs,
+    'fats': fats,
+  };
 
   factory FoodLogModel.fromJson(Map<String, dynamic> json) => FoodLogModel(
-        id: json['id'] as String,
-        date: json['date'] as String,
-        name: json['name'] as String,
-        calories: json['calories'] as int,
-        protein: json['protein'] as int,
-        carbs: json['carbs'] as int,
-        fats: json['fats'] as int,
-      );
+    id: json['id'] as String,
+    date: json['date'] as String,
+    name: json['name'] as String,
+    calories: (json['calories'] as num).toInt(),
+    protein: (json['protein'] as num).toInt(),
+    carbs: (json['carbs'] as num).toInt(),
+    fats: (json['fats'] as num).toInt(),
+  );
 }

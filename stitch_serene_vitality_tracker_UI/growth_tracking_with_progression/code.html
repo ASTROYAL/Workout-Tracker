@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WildStrength | Your Growth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&amp;family=DM+Mono:wght@500&amp;family=Epilogue:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#2b3732",
+                    "inverse-surface": "#d8e6dd",
+                    "background": "#0a1611",
+                    "surface-container": "#16221d",
+                    "outline-variant": "#594139",
+                    "primary-fixed": "#ffdbd0",
+                    "error": "#ffb4ab",
+                    "inverse-on-surface": "#27332d",
+                    "secondary-container": "#334c41",
+                    "primary-container": "#ff6b35",
+                    "on-primary-container": "#5f1900",
+                    "tertiary-fixed-dim": "#b8cbbf",
+                    "outline": "#a98a80",
+                    "on-secondary": "#1d352b",
+                    "surface": "#0a1611",
+                    "secondary": "#b1cdbe",
+                    "primary-fixed-dim": "#ffb59d",
+                    "surface-dim": "#0a1611",
+                    "on-surface": "#d8e6dd",
+                    "on-tertiary": "#23342b",
+                    "secondary-fixed": "#cde9da",
+                    "on-tertiary-container": "#24352c",
+                    "on-tertiary-fixed-variant": "#394b41",
+                    "inverse-primary": "#ab3500",
+                    "secondary-fixed-dim": "#b1cdbe",
+                    "on-error-container": "#ffdad6",
+                    "on-primary": "#5d1900",
+                    "primary": "#ffb59d",
+                    "tertiary-container": "#8b9e92",
+                    "on-secondary-fixed": "#072016",
+                    "on-secondary-container": "#a0bbad",
+                    "on-surface-variant": "#e1bfb5",
+                    "surface-bright": "#2f3c36",
+                    "surface-tint": "#ffb59d",
+                    "on-error": "#690005",
+                    "tertiary-fixed": "#d4e7da",
+                    "on-secondary-fixed-variant": "#334c41",
+                    "on-tertiary-fixed": "#0e1f17",
+                    "on-primary-fixed-variant": "#832600",
+                    "surface-container-low": "#121e19",
+                    "surface-container-high": "#202d27",
+                    "on-primary-fixed": "#390c00",
+                    "surface-container-lowest": "#05100c",
+                    "tertiary": "#b8cbbf",
+                    "error-container": "#93000a",
+                    "surface-container-highest": "#2b3732",
+                    "on-background": "#d8e6dd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "margin-mobile": "16px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "margin-desktop": "32px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "base_unit": "4px"
+            },
+            "fontFamily": {
+                    "headline-md-mobile": ["Playfair Display"],
+                    "stat-lg": ["Playfair Display"],
+                    "display-lg": ["Playfair Display"],
+                    "headline-md": ["Playfair Display"],
+                    "label-caps": ["DM Mono"],
+                    "body-base": ["Epilogue"],
+                    "body-bold": ["Epilogue"]
+            },
+            "fontSize": {
+                    "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "stat-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "900"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                    "body-base": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "body-bold": ["16px", {"lineHeight": "24px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .glass-panel {
+            background: rgba(22, 34, 29, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scroll-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-base overflow-x-hidden pb-24 md:pb-0 md:pt-16">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface-container/80 dark:bg-surface-container/80 backdrop-blur-xl border-b border-white/10 dark:border-white/5 shadow-sm">
+<div class="flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 duration-200 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-primary">menu</span>
+</button>
+<h1 class="font-headline-md text-primary tracking-tight">WildStrength</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex gap-6 mr-8">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">Train</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">Fuel</a>
+<a class="font-label-caps text-label-caps text-primary border-b border-primary transition-colors" href="#">Growth</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">Logs</a>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A cinematic, close-up portrait of a fitness professional with a focused expression, softly lit by warm sunrise light filtering through forest trees. The color palette features deep greens and warm oranges, echoing a premium, nature-inspired fitness brand identity. The lighting creates a soft bokeh effect in the background, emphasizing a calm yet powerful personality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvCwalYKaRJtqq9nPvkjYI5OozJO4TkLEbUJ2VZoBoJKNbS8qUV5pwcFQqyc6L61SH5_zxVPLcVHFf9kufNQhsw55Zalu9awFvQQpyvL17-xNMxU8PZ-GAq0TNbz_dF7xCDrirVODWOksWScI0eClrhkDSGnGGAHeG66EwQCA4fRLLg_DBzW0ZxVlpo5q5tqD_MFI2ea2fufY7boV0o6RdBCby-0U_6Mi0VykxnxF-6tTcvltSlrOWYQ"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-lg">
+<!-- Hero Section -->
+<section class="mt-8 mb-xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<p class="font-label-caps text-label-caps text-primary mb-xs">EVOLUTION TRACKER</p>
+<h2 class="font-display-lg text-display-lg text-on-surface">Your Growth</h2>
+</div>
+<button class="flex items-center gap-2 px-lg py-sm bg-surface-container-high/70 backdrop-blur-xl border border-white/10 text-on-surface-variant rounded-lg hover:bg-surface-variant transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+<span class="font-body-bold">Export PDF</span>
+</button>
+</div>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-xl">
+<!-- Bodyweight Trends Chart (Bento Style) -->
+<div class="md:col-span-8 flex flex-col gap-md">
+<div class="glass-panel rounded-xl p-lg relative overflow-hidden group">
+<!-- Background Decoration -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
+<div class="flex justify-between items-start mb-lg relative z-10">
+<div>
+<h3 class="font-headline-md text-headline-md mb-xs">Weight Trend</h3>
+<p class="text-on-surface-variant text-sm">Last 30 days active monitoring</p>
+</div>
+<div class="flex gap-xs bg-background/40 p-1 rounded-full border border-white/5">
+<button class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-xs font-label-caps">30D</button>
+<button class="px-3 py-1 rounded-full text-on-surface-variant text-xs font-label-caps hover:text-primary transition-colors">90D</button>
+</div>
+</div>
+<!-- SVG Chart Container -->
+<div class="w-full h-64 relative z-10">
+<svg class="w-full h-full drop-shadow-[0_10px_15px_rgba(255,107,53,0.15)]" viewbox="0 0 800 240">
+<defs>
+<lineargradient id="chartGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:rgba(255, 181, 157, 0.2); stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:rgba(255, 181, 157, 0); stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<!-- Path Shadow/Area -->
+<path d="M0 220 C 100 210, 150 180, 200 170 S 300 150, 400 160 S 550 120, 650 130 S 750 110, 800 100 L 800 240 L 0 240 Z" fill="url(#chartGradient)"></path>
+<!-- Smooth Curve Path -->
+<path d="M0 220 C 100 210, 150 180, 200 170 S 300 150, 400 160 S 550 120, 650 130 S 750 110, 800 100" fill="none" stroke="#ffb59d" stroke-linecap="round" stroke-width="4"></path>
+<!-- Grid Lines -->
+<line stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" x1="0" x2="800" y1="50" y2="50"></line>
+<line stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" x1="0" x2="800" y1="150" y2="150"></line>
+<!-- Data Points -->
+<circle cx="200" cy="170" fill="#0a1611" r="6" stroke="#ffb59d" stroke-width="2"></circle>
+<circle cx="400" cy="160" fill="#0a1611" r="6" stroke="#ffb59d" stroke-width="2"></circle>
+<circle cx="650" cy="130" fill="#0a1611" r="6" stroke="#ffb59d" stroke-width="2"></circle>
+<circle cx="800" cy="100" fill="#ffb59d" r="8"></circle>
+</svg>
+<!-- Tooltip Placeholder -->
+<div class="absolute top-[80px] right-[20px] glass-panel px-3 py-2 rounded-lg border border-primary/30 animate-float">
+<p class="text-xs font-label-caps text-primary">TODAY</p>
+<p class="font-stat-lg text-xl">82.4 kg</p>
+</div>
+</div>
+</div>
+<!-- Recent Wins (Horizontal List) -->
+<div class="flex flex-col gap-sm">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant ml-2">Recent Wins</h3>
+<div class="flex gap-md overflow-x-auto scroll-hide pb-2">
+<div class="min-w-[240px] glass-panel p-md rounded-xl border-l-4 border-primary">
+<div class="flex items-center gap-3 mb-xs">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[18px]">workspace_premium</span>
+</div>
+<span class="text-xs font-label-caps text-primary">NEW PR</span>
+</div>
+<p class="font-body-bold">Squat Mastery</p>
+<p class="text-on-surface-variant text-sm">Hit 140kg for 3 reps</p>
+</div>
+<div class="min-w-[240px] glass-panel p-md rounded-xl border-l-4 border-secondary">
+<div class="flex items-center gap-3 mb-xs">
+<div class="w-8 h-8 rounded-full bg-secondary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[18px]">verified</span>
+</div>
+<span class="text-xs font-label-caps text-secondary">CONSISTENCY</span>
+</div>
+<p class="font-body-bold">30 Day Streak</p>
+<p class="text-on-surface-variant text-sm">Every session completed</p>
+</div>
+<div class="min-w-[240px] glass-panel p-md rounded-xl border-l-4 border-primary">
+<div class="flex items-center gap-3 mb-xs">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[18px]">timer</span>
+</div>
+<span class="text-xs font-label-caps text-primary">SPEED</span>
+</div>
+<p class="font-body-bold">Sprint Recovery</p>
+<p class="text-on-surface-variant text-sm">Reduced rest to 60s</p>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-xl p-lg relative overflow-hidden group">
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
+<div class="flex justify-between items-start mb-lg relative z-10">
+<div>
+<h3 class="font-headline-md text-headline-md mb-xs">Workout Progression</h3>
+<p class="text-on-surface-variant text-sm">Estimated 1RM (kg) • Compound Lift Averages</p>
+</div>
+<div class="flex gap-xs bg-background/40 p-1 rounded-full border border-white/5">
+<button class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-xs font-label-caps">30D</button>
+<button class="px-3 py-1 rounded-full text-on-surface-variant text-xs font-label-caps hover:text-primary transition-colors">90D</button>
+</div>
+</div>
+<div class="w-full h-64 relative z-10">
+<svg class="w-full h-full drop-shadow-[0_10px_15px_rgba(255,107,53,0.15)]" viewbox="0 0 800 240">
+<defs>
+<lineargradient id="progressionGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:rgba(255, 181, 157, 0.2); stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:rgba(255, 181, 157, 0); stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<path d="M0 200 C 100 190, 200 210, 300 180 S 450 140, 550 150 S 700 110, 800 90 L 800 240 L 0 240 Z" fill="url(#progressionGradient)"></path>
+<path d="M0 200 C 100 190, 200 210, 300 180 S 450 140, 550 150 S 700 110, 800 90" fill="none" stroke="#ffb59d" stroke-linecap="round" stroke-width="4"></path>
+<line stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" x1="0" x2="800" y1="70" y2="70"></line>
+<line stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" x1="0" x2="800" y1="170" y2="170"></line>
+<circle cx="300" cy="180" fill="#0a1611" r="6" stroke="#ffb59d" stroke-width="2"></circle>
+<circle cx="550" cy="150" fill="#0a1611" r="6" stroke="#ffb59d" stroke-width="2"></circle>
+<circle cx="800" cy="90" fill="#ffb59d" r="8"></circle>
+</svg>
+<div class="absolute top-[70px] right-[20px] glass-panel px-3 py-2 rounded-lg border border-primary/30 animate-float">
+<p class="text-xs font-label-caps text-primary">CURRENT AVG</p>
+<p class="font-stat-lg text-xl">112.5 kg</p>
+</div>
+</div>
+</div></div>
+<!-- History Logs (Vertical List) -->
+<div class="md:col-span-4 flex flex-col gap-md">
+<div class="flex justify-between items-center px-2">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">History Logs</h3>
+<button class="text-xs text-primary hover:underline">View All</button>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- Log Item 1 -->
+<div class="glass-panel p-md rounded-xl hover:bg-surface-container-highest transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-xs font-label-caps text-primary">MONDAY, OCT 23</p>
+<p class="font-body-bold text-lg">Heavy Push Session</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+<div class="flex gap-lg">
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant font-label-caps uppercase">Volume</span>
+<span class="text-sm font-body-bold">12,400 kg</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant font-label-caps uppercase">Time</span>
+<span class="text-sm font-body-bold">72 min</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant font-label-caps uppercase">Focus</span>
+<span class="text-sm font-body-bold">Chest/Delts</span>
+</div>
+</div>
+</div>
+<!-- Log Item 2 -->
+<div class="glass-panel p-md rounded-xl hover:bg-surface-container-highest transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-xs font-label-caps text-primary">SATURDAY, OCT 21</p>
+<p class="font-body-bold text-lg">Forest Trail Run</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+<div class="flex gap-lg">
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant font-label-caps uppercase">Distance</span>
+<span class="text-sm font-body-bold">8.2 km</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant font-label-caps uppercase">Pace</span>
+<span class="text-sm font-body-bold">5:12 /km</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant font-label-caps uppercase">BPM</span>
+<span class="text-sm font-body-bold">148 avg</span>
+</div>
+</div>
+</div>
+<!-- Log Item 3 -->
+<div class="glass-panel p-md rounded-xl hover:bg-surface-container-highest transition-colors cursor-pointer group opacity-80">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-xs font-label-caps text-primary">THURSDAY, OCT 19</p>
+<p class="font-body-bold text-lg">Lower Body Hypertrophy</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+<div class="flex gap-lg text-on-surface-variant">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps uppercase">Volume</span>
+<span class="text-sm">9,800 kg</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps uppercase">Time</span>
+<span class="text-sm">65 min</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Metric Card -->
+<div class="mt-4 bg-secondary-container rounded-xl p-lg relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 bg-cover bg-center" data-alt="An abstract, high-contrast close-up of moss-covered rocks in a misty forest, featuring rich deep greens and subtle silvery highlights. The texture is extremely detailed, conveying a sense of organic strength and quiet endurance. The overall mood is grounded and premium, aligning with a high-performance wellness aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAbhBuW1rmNRbVks-rczE_tZIXGeRGFpF2bnFLCAzJcQt48kfa2GDvBzwIHkyyXf-Wsgum26yguvcgy85VbE0FJ31Ioualot0jnE4WBtr7ZIrAnHDx5sVGRzqyqPSxdU4GDtSMRxMcvE68YBUFGbKhq31lylZlWOSH3j9UC859xda_GH3xoLGCbOw-JbSlk3NVDftbiuDo47EBWY0SAJoCykVdXsRimkM5C3253RNWh1TTOAQi0ZfuLNw')"></div>
+<p class="font-label-caps text-label-caps text-on-secondary mb-1 relative z-10">TOTAL REPS THIS WEEK</p>
+<p class="font-stat-lg text-stat-lg text-on-secondary relative z-10">2,480</p>
+<div class="w-full bg-background/20 h-1.5 rounded-full mt-4 relative z-10">
+<div class="bg-primary h-full rounded-full w-3/4"></div>
+</div>
+<p class="text-xs text-on-secondary-container mt-2 relative z-10">75% of your weekly goal reached</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile only) -->
+<nav class="md:hidden fixed bottom-0 w-full rounded-t-xl z-50 bg-surface-container-high/70 backdrop-blur-2xl border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.4)]">
+<div class="flex justify-around items-center px-4 py-2 pb-safe w-full">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="font-label-caps text-[10px] uppercase mt-1">Train</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined">nutrition</span>
+<span class="font-label-caps text-[10px] uppercase mt-1">Fuel</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary-container bg-primary-container/10 rounded-full py-1 px-4 transition-all active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<span class="font-label-caps text-[10px] uppercase mt-1">Growth</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined">share</span>
+<span class="font-label-caps text-[10px] uppercase mt-1">Logs</span>
+</a>
+</div>
+</nav>
+<!-- Background Elements -->
+<div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none opacity-40">
+<div class="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-1/4 -right-20 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+<script>
+        // Micro-interaction for History Logs
+        document.querySelectorAll('.glass-panel').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.borderColor = 'rgba(255, 181, 157, 0.2)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+            });
+        });
+    </script>
+</body></html>

@@ -10,6 +10,10 @@ class DatabaseHelper {
 
   DatabaseHelper._init();
 
+  static double _asDouble(dynamic value) => (value as num).toDouble();
+
+  static int _asInt(dynamic value) => (value as num).toInt();
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDB('workout_tracker.db');
@@ -22,9 +26,34 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
+  }
+
+  /// Migrate old schema (v1 → v2): drop date-keyed weight_logs, recreate with id key
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Preserve existing data by reading it first
+      final existing = await db.query('weight_logs');
+      await db.execute('DROP TABLE IF EXISTS weight_logs');
+      await db.execute('''
+CREATE TABLE weight_logs (
+  id TEXT PRIMARY KEY,
+  date TEXT NOT NULL,
+  weightKg REAL NOT NULL
+)
+''');
+      // Re-insert old rows with auto-generated ids
+      for (final row in existing) {
+        await db.insert('weight_logs', {
+          'id': '${row['date']}_migrated',
+          'date': row['date'],
+          'weightKg': row['weightKg'],
+        });
+      }
+    }
   }
 
   Future _createDB(Database db, int version) async {
@@ -96,8 +125,9 @@ CREATE TABLE user_settings (
 
     await db.execute('''
 CREATE TABLE weight_logs (
-  date $idType,
-  weightKg $numType
+  id TEXT PRIMARY KEY,
+  date TEXT NOT NULL,
+  weightKg REAL NOT NULL
 )
 ''');
 
@@ -109,7 +139,9 @@ CREATE TABLE weight_logs (
         'type': routine.type,
         'day': routine.day,
         'subtitle': routine.subtitle,
-        'exercises': jsonEncode(routine.exercises.map((e) => e.toJson()).toList()),
+        'exercises': jsonEncode(
+          routine.exercises.map((e) => e.toJson()).toList(),
+        ),
       });
     }
   }
@@ -127,7 +159,9 @@ CREATE TABLE weight_logs (
         type: json['type'] as String,
         day: json['day'] as String,
         subtitle: json['subtitle'] as String,
-        exercises: exercisesList.map((e) => RoutineExerciseModel.fromJson(e)).toList(),
+        exercises: exercisesList
+            .map((e) => RoutineExerciseModel.fromJson(e))
+            .toList(),
       );
     }).toList();
   }
@@ -141,7 +175,9 @@ CREATE TABLE weight_logs (
         'type': routine.type,
         'day': routine.day,
         'subtitle': routine.subtitle,
-        'exercises': jsonEncode(routine.exercises.map((e) => e.toJson()).toList()),
+        'exercises': jsonEncode(
+          routine.exercises.map((e) => e.toJson()).toList(),
+        ),
       },
       where: 'id = ?',
       whereArgs: [routine.id],
@@ -151,24 +187,34 @@ CREATE TABLE weight_logs (
   // --- Workouts ---
   Future<void> saveWorkout(WorkoutModel workout) async {
     final db = await instance.database;
-    await db.insert('workouts', {
-      'id': workout.id,
-      'date': workout.date.toIso8601String(),
-      'routineId': workout.routineId,
-      'durationSeconds': workout.durationSeconds,
-      'volume': workout.volume,
-    });
-
-    for (var set in workout.sets) {
-      await db.insert('sets', {
-        'id': set.id,
-        'workoutId': workout.id,
-        'exerciseName': set.exerciseName,
-        'reps': set.reps,
-        'weight': set.weight,
-        'isCompleted': set.isCompleted ? 1 : 0,
+    await db.transaction((txn) async {
+      await txn.insert('workouts', {
+        'id': workout.id,
+        'date': workout.date.toIso8601String(),
+        'routineId': workout.routineId,
+        'durationSeconds': workout.durationSeconds,
+        'volume': workout.volume,
       });
-    }
+
+      for (var set in workout.sets) {
+        await txn.insert('sets', {
+          'id': set.id,
+          'workoutId': workout.id,
+          'exerciseName': set.exerciseName,
+          'reps': set.reps,
+          'weight': set.weight,
+          'isCompleted': set.isCompleted ? 1 : 0,
+        });
+      }
+    });
+  }
+
+  Future<void> deleteWorkout(String workoutId) async {
+    final db = await instance.database;
+    await db.transaction((txn) async {
+      await txn.delete('sets', where: 'workoutId = ?', whereArgs: [workoutId]);
+      await txn.delete('workouts', where: 'id = ?', whereArgs: [workoutId]);
+    });
   }
 
   Future<List<WorkoutModel>> getWorkouts() async {
@@ -178,22 +224,32 @@ CREATE TABLE weight_logs (
     List<WorkoutModel> workouts = [];
     for (var map in workoutMaps) {
       final workoutId = map['id'] as String;
-      final setMaps = await db.query('sets', where: 'workoutId = ?', whereArgs: [workoutId]);
+      final setMaps = await db.query(
+        'sets',
+        where: 'workoutId = ?',
+        whereArgs: [workoutId],
+      );
 
-      workouts.add(WorkoutModel(
-        id: workoutId,
-        date: DateTime.parse(map['date'] as String),
-        routineId: map['routineId'] as String,
-        durationSeconds: map['durationSeconds'] as int,
-        volume: map['volume'] as double,
-        sets: setMaps.map((s) => SetModel(
-          id: s['id'] as String,
-          exerciseName: s['exerciseName'] as String,
-          reps: s['reps'] as int,
-          weight: s['weight'] as double,
-          isCompleted: (s['isCompleted'] as int) == 1,
-        )).toList(),
-      ));
+      workouts.add(
+        WorkoutModel(
+          id: workoutId,
+          date: DateTime.parse(map['date'] as String),
+          routineId: map['routineId'] as String,
+          durationSeconds: _asInt(map['durationSeconds']),
+          volume: _asDouble(map['volume']),
+          sets: setMaps
+              .map(
+                (s) => SetModel(
+                  id: s['id'] as String,
+                  exerciseName: s['exerciseName'] as String,
+                  reps: _asInt(s['reps']),
+                  weight: _asDouble(s['weight']),
+                  isCompleted: _asInt(s['isCompleted']) == 1,
+                ),
+              )
+              .toList(),
+        ),
+      );
     }
     return workouts;
   }
@@ -201,7 +257,11 @@ CREATE TABLE weight_logs (
   // --- Nutrition ---
   Future<NutritionDayModel?> getNutritionDay(String dateStr) async {
     final db = await instance.database;
-    final maps = await db.query('nutrition', where: 'date = ?', whereArgs: [dateStr]);
+    final maps = await db.query(
+      'nutrition',
+      where: 'date = ?',
+      whereArgs: [dateStr],
+    );
     if (maps.isNotEmpty) {
       return NutritionDayModel.fromJson(maps.first);
     }
@@ -210,12 +270,21 @@ CREATE TABLE weight_logs (
 
   Future<void> saveNutritionDay(NutritionDayModel nutrition) async {
     final db = await instance.database;
-    await db.insert('nutrition', nutrition.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      'nutrition',
+      nutrition.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<List<FoodLogModel>> getFoodLogs(String dateStr) async {
     final db = await instance.database;
-    final maps = await db.query('food_logs', where: 'date = ?', whereArgs: [dateStr]);
+    final maps = await db.query(
+      'food_logs',
+      where: 'date = ?',
+      whereArgs: [dateStr],
+      orderBy: 'rowid DESC',
+    );
     return maps.map((json) => FoodLogModel.fromJson(json)).toList();
   }
 
@@ -232,7 +301,13 @@ CREATE TABLE weight_logs (
   // --- Weight Logs ---
   Future<void> saveWeightLog(String date, double weightKg) async {
     final db = await instance.database;
-    await db.insert('weight_logs', {'date': date, 'weightKg': weightKg}, conflictAlgorithm: ConflictAlgorithm.replace);
+    // Use full ISO timestamp as the unique id so multiple entries per day work
+    final id = DateTime.now().toIso8601String();
+    await db.insert('weight_logs', {
+      'id': id,
+      'date': date,
+      'weightKg': weightKg,
+    });
   }
 
   Future<List<Map<String, dynamic>>> getWeightLogs() async {
@@ -243,7 +318,11 @@ CREATE TABLE weight_logs (
   // --- User Settings ---
   Future<String?> getUserSetting(String key) async {
     final db = await instance.database;
-    final maps = await db.query('user_settings', where: 'key = ?', whereArgs: [key]);
+    final maps = await db.query(
+      'user_settings',
+      where: 'key = ?',
+      whereArgs: [key],
+    );
     if (maps.isNotEmpty) {
       return maps.first['value'] as String;
     }
@@ -252,11 +331,10 @@ CREATE TABLE weight_logs (
 
   Future<void> saveUserSetting(String key, String value) async {
     final db = await instance.database;
-    await db.insert(
-      'user_settings',
-      {'key': key, 'value': value},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert('user_settings', {
+      'key': key,
+      'value': value,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future close() async {
